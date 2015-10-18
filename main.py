@@ -1,12 +1,15 @@
-from test_case import *
+from test_generator import *
 from test_suite import *
 
-t = Task("top_level_task")
-case = TestCase("tiny_test", t, [t])
+settings = TestGeneratorSettings()
+settings.num_cases = 1
 suite_dir = "tiny_test_suite"
 test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
+cases = generate_random_cases(settings)
+# t = Task("top_level_task")
+# case = TestCase("tiny_test", t, [t])
 
-results = run_test_suite(test_dir, suite_dir, [case])
+results = run_test_suite(test_dir, suite_dir, cases)
 
 print ''
 print '-------------------------- TEST RESULTS -------------------------'

@@ -4,25 +4,20 @@ def run_test_case(case):
     print case.pretty_string()
 
 class TestCase():
-
-    def __init__(self, name, top_level_task, all_tasks):
+    def __init__(self, name, top_level_task):
         self.name = name
         self.top_level_task = top_level_task
-        self.tasks = all_tasks
+
+    def pretty_field_id_enums(self):
+        all_field_spaces = self.top_level_task.collect_field_spaces()
+        return map(lambda x: cpp_enum(x.name, map(lambda y: cpp_var(y), x.field_ids)), all_field_spaces)
 
     def pretty_task_id_enum(self):
-        return cpp_enum("FIELD_ID", [])
-
-    def pretty_field_id_enum(self):
-        task_id_names = []
-        for task in self.tasks:
-            task_id_names.append(task.id())
+        task_id_names = [self.top_level_task.id()]
         return cpp_enum("TASK_ID", task_id_names)
 
     def pretty_task_functions(self):
-        task_functions = []
-        for task in self.tasks:
-            task_functions.append(task.task_function())
+        task_functions = [self.top_level_task.task_function()]
         return task_functions
 
     def pretty_main(self):
@@ -38,17 +33,14 @@ class TestCase():
                            [cpp_var(self.top_level_task.id())])
 
     def register_tasks(self):
-        taskCode = []
-        for task in self.tasks:
-            taskCode.append(task.registration_code())
+        taskCode = [self.top_level_task.registration_code()]
         return taskCode
 
     def pretty_string(self):
         boilerplate = [cpp_include("legion.h"),
                        cpp_using("LegionRuntime::HighLevel"),
                        cpp_using("LegionRuntime::Accessor"),
-                       self.pretty_task_id_enum(),
-                       self.pretty_field_id_enum()]
+                       self.pretty_task_id_enum()] + self.pretty_field_id_enums()
         return cpp_top_level_items(boilerplate +
                                    self.pretty_task_functions() + 
                                    [self.pretty_main()])
@@ -56,6 +48,10 @@ class TestCase():
 class Task():
     def __init__(self, name):
         self.name = name
+        self.logical_regions_created = []
+
+    def collect_field_spaces(self):
+        return map(lambda x: x.field_space, self.logical_regions_created)
 
     def task_function(self):
         runtime = cpp_formal_param(cpp_ptr(cpp_var("HighLevelRuntime")), cpp_var("runtime"))
