@@ -1,3 +1,6 @@
+def cpp_comment(text):
+    return '// ' + text
+
 def cpp_top_level_items(item_list):
     str = ""
     for item in item_list:
@@ -24,6 +27,9 @@ def cpp_function(return_type, name, template_params, args, body):
     str = return_type + " " + name + "(" + cpp_param_list(args) + ")"
     str += "{\n" + cpp_stmt_list(1, body) + "}"
     return str
+
+def cpp_assign(lhs, rhs):
+    return lhs + ' = ' + rhs
 
 def cpp_funcall(name, template_params, args):
     str = name
