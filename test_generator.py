@@ -3,6 +3,7 @@ from random import *
 from index_space import *
 from field_space import *
 from logical_region import *
+from region_requirement import *
 from test_case import *
 
 next_name_suffix = 0
@@ -15,11 +16,38 @@ def generate_random_cases(settings):
     return cases
 
 def random_case(test_num, settings):
-    t = Task("top_level_task")
+    t = Task("top_level_task", [])
     logical_regions = random_logical_region_trees(t.name, settings)
     t.logical_regions_created = logical_regions
+    subtasks = random_tasks(t.logical_regions_created, settings)
+    t.child_tasks = subtasks
     case = TestCase("test_" + str(test_num), t)
     return case
+
+def random_tasks(regions, settings):
+    num_tasks = randint(1, settings.max_task_children)
+    tasks = []
+    for i in xrange(num_tasks):
+        tasks.append(random_task(regions, settings))
+    return tasks
+
+def random_task(regions, settings):
+    name = next_name('task')
+    rrs = random_region_requirements(regions, settings)
+    return Task(name, rrs)
+
+def random_region_requirements(regions, settings):
+    num_reqs = randint(0, settings.max_region_requirements_per_task)
+    rrs = []
+    for i in xrange(num_reqs):
+        rrs.append(random_region_requirement(regions, settings))
+    return rrs
+
+def random_region_requirement(regions, settings):
+    region = regions[randint(0, len(regions) - 1)]
+    privilege = settings.privileges[randint(0, len(settings.privileges) - 1)]
+    coherence = settings.coherences[randint(0, len(settings.coherences) - 1)]
+    return RegionRequirement(region, privilege, coherence)
 
 def random_logical_region_trees(task_name, settings):
     num_trees = randint(1, settings.max_new_trees_per_task)
@@ -66,4 +94,8 @@ class TestGeneratorSettings():
         self.ind_min = 0
         self.ind_max = 100
         self.max_new_trees_per_task = 3
+        self.max_task_children = 5
+        self.max_region_requirements_per_task = 1
+        self.privileges = ['READ_ONLY', 'READ_WRITE']
+        self.coherences = ['EXCLUSIVE', 'ATOMIC', 'SIMULTANEOUS']
 

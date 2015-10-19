@@ -2,7 +2,6 @@ from test_generator import *
 from test_suite import *
 
 settings = TestGeneratorSettings()
-settings.num_cases = 1
 suite_dir = "tiny_test_suite"
 test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 cases = generate_random_cases(settings)

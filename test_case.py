@@ -15,12 +15,13 @@ class TestCase():
         return map(lambda x: cpp_enum(x.name.upper(), map(lambda y: cpp_var(y), x.field_ids)), all_field_spaces)
 
     def pretty_task_id_enum(self):
-        task_id_names = [self.top_level_task.id()]
+        tasks = self.top_level_task.collect_tasks()
+        task_id_names = map(lambda t: t.id(), tasks)
         return cpp_enum("TASK_ID", task_id_names)
 
     def pretty_task_functions(self):
-        task_functions = [self.top_level_task.task_function()]
-        return task_functions
+        all_tasks = self.top_level_task.collect_tasks()
+        return map(lambda t: t.task_function(), all_tasks)
 
     def pretty_main(self):
         main_args = [cpp_formal_param(cpp_int(), cpp_var("argc")),
@@ -55,12 +56,20 @@ task = cpp_formal_param(cpp_const(cpp_ptr(cpp_var("Task"))), cpp_var("task"))
 task_args = [task, regions, context, runtime]
 
 class Task():
-    def __init__(self, name):
+    def __init__(self, name, region_requirements):
         self.name = name
         self.logical_regions_created = []
+        self.region_requirements = region_requirements
+        self.child_tasks = []
 
     def collect_field_spaces(self):
         return map(lambda x: x.field_space, self.logical_regions_created)
+
+    def collect_tasks(self):
+        all_tasks = [self]
+        for child in self.child_tasks:
+            all_tasks += child.collect_tasks()
+        return all_tasks        
 
     def index_spaces_init(self):
         index_spaces = map(lambda x: x.index_space, self.logical_regions_created)
@@ -81,9 +90,22 @@ class Task():
 
     def logical_regions_init(self):
         return self.index_spaces_init() + self.field_spaces_init() + self.logical_regions_created_init()
+
+    def launch_code(self):
+        launcher_name = self.name + '_launcher'
+        null_arg = cpp_var('TaskArgument(NULL, 0)')
+        launcher_init = cpp_funcall('TaskLauncher ' + launcher_name, [], [self.id(), null_arg])
+        launch_call = cpp_funcall('runtime->execute_task', [], ['ctx', launcher_name])
+        return [launcher_init, launch_call]
+
+    def child_task_launches(self):
+        launches = []
+        for child_task in self.child_tasks:
+            launches.extend(child_task.launch_code())
+        return launches
     
     def task_function(self):
-        task_body = self.logical_regions_init()
+        task_body = self.logical_regions_init() + self.child_task_launches()
         return cpp_function(cpp_void(), self.name, [], task_args, task_body)
 
     def registration_code(self):
