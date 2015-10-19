@@ -38,6 +38,9 @@ def cpp_funcall(name, template_params, args):
     str += "(" + cpp_param_list(args) + ")"
     return str
 
+def cpp_block(cpp_stmts):
+    return "{ " + cpp_stmt_list(0, cpp_stmts) + "}"
+    
 def cpp_stmt_list(n, cpp_stmts):
     str = ""
     for stmt in cpp_stmts:

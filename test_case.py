@@ -1,3 +1,5 @@
+from itertools import chain
+
 from cpp_code import *
 
 def run_test_case(case):
@@ -63,12 +65,16 @@ class Task():
     def index_spaces_init(self):
         index_spaces = map(lambda x: x.index_space, self.logical_regions_created)
         index_spaces_to_init = filter(lambda i: i.task_name == self.name, index_spaces)
-        return map(lambda i: cpp_comment(i.name), index_spaces_to_init)
+        return map(lambda i: i.init_code(), index_spaces_to_init)
 
     def field_spaces_init(self):
         field_spaces = map(lambda x: x.field_space, self.logical_regions_created)
         field_spaces_to_init = filter(lambda fs: fs.task_name == self.name, field_spaces)
-        return map(lambda fs: fs.init_code(), field_spaces_to_init)
+        init_code_lists = map(lambda fs: fs.init_code(), field_spaces_to_init)
+        init_code = []
+        for i in init_code_lists:
+            init_code.extend(i)
+        return init_code
 
     def logical_regions_created_init(self):
         return map(lambda lr: lr.init_code(), self.logical_regions_created)
