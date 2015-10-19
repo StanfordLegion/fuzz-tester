@@ -37,7 +37,7 @@ class TestCase():
 
     def register_tasks(self):
         taskCode = [self.top_level_task.registration_code()]
-        return taskCode
+        return map(lambda t: t.registration_code(), self.top_level_task.collect_tasks())
 
     def pretty_string(self):
         boilerplate = [cpp_include("legion.h"),
@@ -91,12 +91,20 @@ class Task():
     def logical_regions_init(self):
         return self.index_spaces_init() + self.field_spaces_init() + self.logical_regions_created_init()
 
+    def region_requirements_code(self, launcher_name):
+        rr_code = []
+        i = 0
+        for rr in self.region_requirements:
+            rr_code.extend(rr.init_code(i, launcher_name))
+            i += 1
+        return rr_code
+
     def launch_code(self):
         launcher_name = self.name + '_launcher'
         null_arg = cpp_var('TaskArgument(NULL, 0)')
         launcher_init = cpp_funcall('TaskLauncher ' + launcher_name, [], [self.id(), null_arg])
         launch_call = cpp_funcall('runtime->execute_task', [], ['ctx', launcher_name])
-        return [launcher_init, launch_call]
+        return [launcher_init] + self.region_requirements_code(launcher_name) + [launch_call]
 
     def child_task_launches(self):
         launches = []

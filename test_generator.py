@@ -45,9 +45,15 @@ def random_region_requirements(regions, settings):
 
 def random_region_requirement(regions, settings):
     region = regions[randint(0, len(regions) - 1)]
+    fields = random_fields(region, settings)
     privilege = settings.privileges[randint(0, len(settings.privileges) - 1)]
     coherence = settings.coherences[randint(0, len(settings.coherences) - 1)]
-    return RegionRequirement(region, privilege, coherence)
+    return RegionRequirement(region, fields, privilege, coherence)
+
+def random_fields(region, settings):
+    possible_fields = region.field_space.field_ids
+    num_fields = randint(1, min(settings.max_fields_per_region_requirement, len(possible_fields)))
+    return sample(set(possible_fields), num_fields)
 
 def random_logical_region_trees(task_name, settings):
     num_trees = randint(1, settings.max_new_trees_per_task)
@@ -96,6 +102,7 @@ class TestGeneratorSettings():
         self.max_new_trees_per_task = 3
         self.max_task_children = 5
         self.max_region_requirements_per_task = 1
+        self.max_fields_per_region_requirement = 3
         self.privileges = ['READ_ONLY', 'READ_WRITE']
         self.coherences = ['EXCLUSIVE', 'ATOMIC', 'SIMULTANEOUS']
 
