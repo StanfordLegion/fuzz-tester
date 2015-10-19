@@ -1,11 +1,12 @@
 from cpp_code import *
 
 class IndexSpace():
-    def __init__(self, name, task_name, ind_start, ind_end):
+    def __init__(self, name, task_name, ind_start, ind_end, partitions):
         self.name = name
         self.task_name = task_name
         self.ind_start = ind_start
         self.ind_end = ind_end
+        self.partitions = partitions
         self.is_needed = False
 
     def init_code(self):

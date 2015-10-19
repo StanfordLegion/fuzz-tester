@@ -2,6 +2,8 @@ from random import *
 
 from index_space import *
 from field_space import *
+from index_partition import *
+from index_subspace import *
 from logical_region import *
 from name_source import next_name
 from region_requirement import *
@@ -14,10 +16,14 @@ class TestGeneratorSettings():
         self.max_fields = 4
         self.ind_min = 0
         self.ind_max = 100
+        self.max_partitions = 3
         self.max_new_trees_per_task = 3
         self.max_task_children = 5
         self.max_region_requirements_per_task = 1
         self.max_fields_per_region_requirement = 3
+        self.max_colors_per_partition = 3
+        self.stop_constant = 10
+        self.max_depth = 5
         self.privileges = ['READ_ONLY', 'READ_WRITE']
         self.coherences = ['EXCLUSIVE', 'ATOMIC', 'SIMULTANEOUS']
 
@@ -57,12 +63,23 @@ def random_region_requirements(regions, settings):
     return rrs
 
 def random_region_requirement(regions, settings):
-    region = regions[randint(0, len(regions) - 1)]
-    region.should_print()
+    region = pick_random_region(regions, settings)
     fields = random_fields(region, settings)
     privilege = settings.privileges[randint(0, len(settings.privileges) - 1)]
     coherence = settings.coherences[randint(0, len(settings.coherences) - 1)]
     return RegionRequirement(region, fields, privilege, coherence)
+
+def pick_random_region(regions, settings):
+    next_region = regions[randint(0, len(regions) - 1)]
+    next_region.should_print()
+    if should_stop(0, settings) or next_region.partitions == []:
+        return next_region
+    next_partition = next_region.partitions[randint(0, len(regions) - 1)]
+    return pick_random_region(next_partition.children, settings)
+
+def should_stop(depth, settings):
+    i = randint(0, settings.stop_constant)
+    return depth >= settings.max_depth or i == 0
 
 def random_fields(region, settings):
     possible_fields = region.field_space.field_ids
@@ -84,14 +101,53 @@ def random_logical_region_tree(task_name, settings):
 
 def make_logical_region_tree(task_name, field_space, index_tree):
     name = next_name('logical_region')
-    return LogicalRegion(name, task_name, field_space, index_tree)
+    partitions = []
+    for p in index_tree.partitions:
+        partitions.append(make_logical_partition(task_name, p))
+    return LogicalRegion(name, task_name, field_space, index_tree, partitions)
+
+def make_logical_partition(part_name, task_name, partition):
+    name = next_name('logical_partition')
+    logical_subspaces = {}
+    for i in partition:
+        logical_subspaces[i] = make_logical_subspace(partition[i])
+    return LogicalPartition(name, task_name, logical_subspaces)
 
 def random_index_tree(task_name, settings):
     start = randint(settings.ind_min, settings.ind_max)
     end = randint(start, settings.ind_max)
     name = next_name('index_space')
-    return IndexSpace(name, task_name, start, end)
-    
+    if should_stop(0, settings):
+        partitions = []
+    else:
+        partitions = random_index_partitions(task_name, 0, start, end, settings)
+    return IndexSpace(name, task_name, start, end, partitions)
+
+def random_index_partitions(task_name, depth, start, end, settings):
+    parts = []
+    num_parts = randint(0, settings.max_partitions)
+    for i in xrange(0, num_parts):
+        parts.append(random_index_partition(task_name, depth+1, start, end, settings))
+    return parts
+
+def random_index_partition(task_name, depth, start, end, settings):
+    num_colors = randint(1, settings.max_colors_per_partition)
+    subspaces = {}
+    for i in xrange(0, num_colors):
+        subspaces[i] = random_index_subspace(task_name, depth+1, start, end, settings)
+    part_name = next_name('index_partition')
+    return IndexPartition(part_name, task_name, subspaces)
+
+def random_index_subspace(task_name, depth, start, end, settings):
+    sub_start = randint(start, end)
+    sub_end = randint(sub_start, end)
+    name = next_name('index_subspace')
+    if should_stop(depth, settings):
+        partitions = []
+    else:
+        partitions = random_index_partitions(task_name, depth+1, sub_start, sub_end, settings)
+    return IndexSubspace(name, task_name, sub_start, sub_end, partitions)
+
 def random_field_space(task_name, settings):
     name = next_name('field_space')
     num_fields = randint(1, settings.max_fields)

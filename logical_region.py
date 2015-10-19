@@ -1,12 +1,13 @@
 from cpp_code import *
 
 class LogicalRegion():
-    def __init__(self, name, task_name, field_space, index_space):
+    def __init__(self, name, task_name, field_space, index_space, partitions):
         self.name = name
         self.task_name = task_name
         self.field_space = field_space
         self.index_space = index_space
         self.is_needed = False
+        self.partitions = partitions
 
     def should_print(self):
         self.is_needed = True

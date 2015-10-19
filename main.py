@@ -17,9 +17,8 @@ num_cases = 0
 for case in results:
     num_cases += 1
     if results[case] != '':
-        result_str += case + '\tFAILED\t' + results[case]
+        result_str += case + '\tFAILED\t' + results[case] + '\n'
         all_passed = False
-
         
 if all_passed:
     result_str = 'All tests passed'
