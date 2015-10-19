@@ -58,6 +58,7 @@ def random_region_requirements(regions, settings):
 
 def random_region_requirement(regions, settings):
     region = regions[randint(0, len(regions) - 1)]
+    region.should_print()
     fields = random_fields(region, settings)
     privilege = settings.privileges[randint(0, len(settings.privileges) - 1)]
     coherence = settings.coherences[randint(0, len(settings.coherences) - 1)]
