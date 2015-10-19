@@ -12,12 +12,19 @@ print ''
 print '-------------------------- TEST RESULTS -------------------------'
 
 all_passed = True
+result_str = ''
+num_cases = 0
 for case in results:
+    num_cases += 1
     if results[case] != '':
-        print case, '\tFAILED\t', results[case]
+        result_str += case + '\tFAILED\t' + results[case]
         all_passed = False
 
+        
 if all_passed:
-    print 'All tests passed'
+    result_str = 'All tests passed'
+
+print 'Cases:\t' + str(num_cases)
+print result_str
 
 print '-----------------------------------------------------------------'
