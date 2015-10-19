@@ -3,10 +3,23 @@ from random import *
 from index_space import *
 from field_space import *
 from logical_region import *
+from name_source import next_name
 from region_requirement import *
 from test_case import *
 
-next_name_suffix = 0
+class TestGeneratorSettings():
+    def __init__(self):
+        self.seed = 1
+        self.num_cases = 1
+        self.max_fields = 4
+        self.ind_min = 0
+        self.ind_max = 100
+        self.max_new_trees_per_task = 3
+        self.max_task_children = 5
+        self.max_region_requirements_per_task = 1
+        self.max_fields_per_region_requirement = 3
+        self.privileges = ['READ_ONLY', 'READ_WRITE']
+        self.coherences = ['EXCLUSIVE', 'ATOMIC', 'SIMULTANEOUS']
 
 def generate_random_cases(settings):
     seed(settings.seed)
@@ -85,24 +98,3 @@ def random_field_space(task_name, settings):
     for i in xrange(num_fields):
         field_ids.append(name + '_' + str(i))
     return FieldSpace(name, task_name, field_ids)
-
-def next_name(prefix):
-    global next_name_suffix
-    name = prefix + '_' + str(next_name_suffix)
-    next_name_suffix += 1
-    return name
-
-class TestGeneratorSettings():
-    def __init__(self):
-        self.seed = 0
-        self.num_cases = 1
-        self.max_fields = 4
-        self.ind_min = 0
-        self.ind_max = 100
-        self.max_new_trees_per_task = 3
-        self.max_task_children = 5
-        self.max_region_requirements_per_task = 1
-        self.max_fields_per_region_requirement = 3
-        self.privileges = ['READ_ONLY', 'READ_WRITE']
-        self.coherences = ['EXCLUSIVE', 'ATOMIC', 'SIMULTANEOUS']
-
