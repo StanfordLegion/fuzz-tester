@@ -1,12 +1,5 @@
 from cpp_code import *
 
-# Task argument boilerplate
-runtime = cpp_formal_param(cpp_ptr(cpp_var("HighLevelRuntime")), cpp_var("runtime"))
-context = cpp_formal_param(cpp_var("Context"), cpp_var("ctx"))
-regions = cpp_formal_param(cpp_const(cpp_ref(cpp_var("std::vector<PhysicalRegion>"))), cpp_var("regions"))
-task = cpp_formal_param(cpp_const(cpp_ptr(cpp_var("Task"))), cpp_var("task"))
-task_args = [task, regions, context, runtime]
-
 class Task():
     def __init__(self, name, region_requirements):
         self.name = name
@@ -77,3 +70,11 @@ class Task():
 
     def id(self):
         return self.name.upper() + "_ID"
+
+# Task argument boilerplate
+runtime = cpp_formal_param(cpp_ptr(cpp_var("HighLevelRuntime")), cpp_var("runtime"))
+context = cpp_formal_param(cpp_var("Context"), cpp_var("ctx"))
+regions = cpp_formal_param(cpp_const(cpp_ref(cpp_var("std::vector<PhysicalRegion>"))), cpp_var("regions"))
+task = cpp_formal_param(cpp_const(cpp_ptr(cpp_var("Task"))), cpp_var("task"))
+task_args = [task, regions, context, runtime]
+    

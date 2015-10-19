@@ -17,10 +17,10 @@ def run_test_suite(test_dir, suite_dir, cases):
 def run_test(test_location, test_case):
     create_test_dir(test_location, test_case)
     compile_res = compile_case(test_location)
-    if compile_res != 0:
+    if compile_res != '':
         return compile_res
     run_res = run_case(test_location, test_case.name)
-    if run_res != 0:
+    if run_res != '':
         return run_res
     return run_legion_spy(test_location, test_case.name)
 
@@ -37,7 +37,10 @@ def makefile_string(file_name):
 def compile_case(test_dir):
     build_process = Popen('make -j4 -C ' + test_dir, shell=True)
     build_process.communicate()
-    return build_process.returncode
+    if build_process.returncode == 0:
+        return ''
+    else:
+        return 'build error code ' + str(build_process.returncode)
 
 def run_case(test_location, test_name):
     spy_log_file = join(test_location, "spy.log")
@@ -46,7 +49,10 @@ def run_case(test_location, test_name):
     run_command_string = test_executable_path + legion_spy_flags
     run_process = Popen(run_command_string, shell=True)
     run_process.communicate()
-    return run_process.returncode
+    if run_process.returncode == 0:
+        return ''
+    else:
+        return 'run error code ' + str(run_process.returncode)
 
 def run_legion_spy(test_location, test_name):
     spy_log_file = join(test_location, "spy.log")
@@ -54,4 +60,7 @@ def run_legion_spy(test_location, test_name):
     run_legion_spy_command_string = legion_spy_path + spy_options + spy_log_file
     spy_process = Popen(run_legion_spy_command_string, shell=True)
     spy_process.communicate()
-    return spy_process.returncode
+    if spy_process.returncode == 0:
+        return ''
+    else:
+        return 'legion spy error code ' + str(spy_process.returncode)

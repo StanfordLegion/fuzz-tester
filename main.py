@@ -13,8 +13,8 @@ print '-------------------------- TEST RESULTS -------------------------'
 
 all_passed = True
 for case in results:
-    if results[case] != 0:
-        print case, 'FAILED, error code:', results[case]
+    if results[case] != '':
+        print case, '\tFAILED\t', results[case]
         all_passed = False
 
 if all_passed:

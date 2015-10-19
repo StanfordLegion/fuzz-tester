@@ -30,7 +30,9 @@ class TestCase():
         return cpp_function(cpp_int(), "main", [], main_args, self.main_body())
 
     def main_body(self):
-        return [self.set_top_level_task()] + self.register_tasks()
+        task_registration = [self.set_top_level_task()] + self.register_tasks()
+        run_call = cpp_var("return HighLevelRuntime::start(argc, argv)")
+        return task_registration + [run_call]
 
     def set_top_level_task(self):
         return cpp_funcall("HighLevelRuntime::set_top_level_task_id", [],
