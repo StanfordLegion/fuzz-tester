@@ -17,8 +17,15 @@ class IndexSubspace():
             code.extend(p.init_code(self.name))
         return code
 
+    def should_print(self):
+        res = False
+        for p in self.partitions:
+            if p.is_needed:
+                res = True
+        return res
+
     def init_code(self, parent_name, color):
-        if self.is_needed:
+        if self.should_print():
             return self.pretty_code(parent_name, color)
         else:
             return []
