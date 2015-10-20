@@ -11,7 +11,7 @@ def main():
     run_timestamped_test_suite(settings)
 
 def run_timestamped_test_suite(settings):
-    suite_dir = "test_" + datetime.now().strftime("%m-%d-%Y_%H-%M-%S")
+    suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     cases = generate_random_cases(settings)
     results = run_test_suite(test_dir, suite_dir, cases)
     process_and_print_results(results)

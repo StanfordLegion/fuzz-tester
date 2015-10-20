@@ -58,9 +58,12 @@ def run_legion_spy(test_location, test_name):
     spy_log_file = join(test_location, "spy.log")
     spy_options = ' -l '
     run_legion_spy_command_string = legion_spy_path + spy_options + spy_log_file
-    spy_process = Popen(run_legion_spy_command_string, shell=True)
+    spy_process = Popen(run_legion_spy_command_string, shell=True, stdout=PIPE)
     spy_process.communicate()
     if spy_process.returncode == 0:
-        return ''
+        return parse_legion_spy_output(spy_process)
     else:
         return 'legion spy error code ' + str(spy_process.returncode)
+
+def parse_legion_spy_output(spy_process):
+    return ''
