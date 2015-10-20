@@ -14,7 +14,7 @@ from test_case import *
 class TestGeneratorSettings():
     def __init__(self):
         self.seed = 1
-        self.num_cases = 5
+        self.num_cases = 100
         self.max_fields = 4
         self.ind_min = 0
         self.ind_max = 100

@@ -27,4 +27,4 @@ class LogicalPartition():
         if self.is_needed:
             return self.pretty_code(parent_name)
         else:
-            return ['']
+            return []

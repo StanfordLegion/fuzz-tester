@@ -24,4 +24,4 @@ class IndexSpace():
         if self.is_needed:
             return self.pretty_code()
         else:
-            return ['']
+            return []
