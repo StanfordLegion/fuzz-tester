@@ -4,7 +4,9 @@ from index_space import *
 from field_space import *
 from index_partition import *
 from index_subspace import *
+from logical_partition import *
 from logical_region import *
+from logical_subspace import *
 from name_source import next_name
 from region_requirement import *
 from test_case import *
@@ -74,8 +76,9 @@ def pick_random_region(regions, settings):
     next_region.should_print()
     if should_stop(0, settings) or next_region.partitions == []:
         return next_region
-    next_partition = next_region.partitions[randint(0, len(regions) - 1)]
-    return pick_random_region(next_partition.children, settings)
+    next_partition = next_region.partitions[randint(0, len(next_region.partitions) - 1)]
+    next_partition.should_print()
+    return pick_random_region(next_partition.subspaces, settings)
 
 def should_stop(depth, settings):
     i = randint(0, settings.stop_constant)
@@ -103,16 +106,23 @@ def make_logical_region_tree(task_name, field_space, index_tree):
     name = next_name('logical_region')
     partitions = []
     for p in index_tree.partitions:
-        partitions.append(make_logical_partition(task_name, p))
+        partitions.append(make_logical_partition(task_name, field_space, p))
     return LogicalRegion(name, task_name, field_space, index_tree, partitions)
 
-def make_logical_partition(part_name, task_name, partition):
+def make_logical_partition(task_name, field_space, partition):
     name = next_name('logical_partition')
     logical_subspaces = {}
-    for i in partition:
-        logical_subspaces[i] = make_logical_subspace(partition[i])
-    return LogicalPartition(name, task_name, logical_subspaces)
+    for i in partition.subspaces:
+        logical_subspaces[i] = make_logical_subspace(task_name, field_space, partition.subspaces[i])
+    return LogicalPartition(name, task_name, partition, logical_subspaces)
 
+def make_logical_subspace(task_name, field_space, index_subspace):
+    name = next_name('logical_subregion')
+    partitions = []
+    for p in index_subspace.partitions:
+        partitions.append(make_logical_partition(task_name, field_space, p))
+    return LogicalSubspace(name, task_name, field_space, index_subspace, partitions)
+    
 def random_index_tree(task_name, settings):
     start = randint(settings.ind_min, settings.ind_max)
     end = randint(start, settings.ind_max)

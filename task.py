@@ -1,3 +1,5 @@
+from itertools import chain
+
 from cpp_code import *
 
 class Task():
@@ -19,7 +21,7 @@ class Task():
     def index_spaces_init(self):
         index_spaces = map(lambda x: x.index_space, self.logical_regions_created)
         index_spaces_to_init = filter(lambda i: i.task_name == self.name, index_spaces)
-        return map(lambda i: i.init_code(), index_spaces_to_init)
+        return list(chain(*map(lambda i: i.init_code(), index_spaces_to_init)))
 
     def field_spaces_init(self):
         field_spaces = map(lambda x: x.field_space, self.logical_regions_created)
@@ -31,7 +33,7 @@ class Task():
         return init_code
 
     def logical_regions_created_init(self):
-        return map(lambda lr: lr.init_code(), self.logical_regions_created)
+        return list(chain(*map(lambda lr: lr.init_code(), self.logical_regions_created)))
 
     def logical_regions_init(self):
         return self.index_spaces_init() + self.field_spaces_init() + self.logical_regions_created_init()
