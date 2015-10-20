@@ -13,7 +13,7 @@ class RegionRequirement():
             field_add_stmts.append(launcher_name + '.region_requirements[' + str(requirement_num) + '].add_field(' + f + ')')
         return field_add_stmts
 
-    def init_code(self, requirement_num, launcher_name):
-        rr = cpp_funcall('RegionRequirement', [], [self.region.name, self.privilege, self.coherence, self.region.name])
+    def init_code(self, requirement_num, launcher_name, parent_name):
+        rr = cpp_funcall('RegionRequirement', [], [self.region.name, self.privilege, self.coherence, parent_name])
         add_rr = cpp_funcall(launcher_name + '.add_region_requirement', [], [rr])
         return [add_rr] + self.add_fields(requirement_num, launcher_name)
