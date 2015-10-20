@@ -14,18 +14,18 @@ from test_case import *
 class TestGeneratorSettings():
     def __init__(self):
         self.seed = 1
-        self.num_cases = 100
-        self.max_fields = 4
+        self.num_cases = 1
+        self.max_fields = 20
         self.ind_min = 0
-        self.ind_max = 100
-        self.max_partitions = 3
-        self.max_new_trees_per_task = 3
-        self.max_task_children = 5
+        self.ind_max = 1000
+        self.max_partitions = 10
+        self.max_new_trees_per_task = 20
+        self.max_task_children = 500
         self.max_region_requirements_per_task = 1
-        self.max_fields_per_region_requirement = 3
-        self.max_colors_per_partition = 3
-        self.stop_constant = 10
-        self.max_depth = 5
+        self.max_fields_per_region_requirement = 100
+        self.max_colors_per_partition = 10
+        self.stop_constant = 30
+        self.max_depth = 6
         self.privileges = ['READ_ONLY', 'READ_WRITE']
         self.coherences = ['EXCLUSIVE', 'ATOMIC', 'SIMULTANEOUS']
 
@@ -65,7 +65,7 @@ def random_region_requirements(regions, settings):
     return rrs
 
 def random_region_requirement(regions, settings):
-    region_and_parent = pick_random_region_and_parent(regions, None, settings)
+    region_and_parent = pick_random_region_and_parent(regions, settings)
     region = region_and_parent[0]
     parent = region_and_parent[1]
     fields = random_fields(region, settings)
@@ -73,20 +73,21 @@ def random_region_requirement(regions, settings):
     coherence = settings.coherences[randint(0, len(settings.coherences) - 1)]
     return RegionRequirement(region, parent, fields, privilege, coherence)
 
-def pick_random_region_and_parent(regions, parent, settings):
+def pick_random_region_and_parent(regions, settings):
     region_ind = randint(0, len(regions) - 1)
-    next_region = regions[region_ind]
+    region_to_select_from = regions[region_ind]
+    region_to_select_from.should_print()
+    return (pick_random_region([region_to_select_from], settings), region_to_select_from)
+
+def pick_random_region(regions, settings):
+    next_region = regions[randint(0, len(regions) - 1)]
     next_region.should_print()
     if should_stop(0, settings) or next_region.partitions == []:
-        if parent is None:
-            return (next_region, next_region)
-        else:
-            return (next_region, parent)
+        return next_region
     next_partition = next_region.partitions[randint(0, len(next_region.partitions) - 1)]
     next_partition.should_print()
     next_regions = next_partition.subspaces
-    next_parent = next_region
-    return pick_random_region_and_parent(next_partition.subspaces, next_parent, settings)
+    return pick_random_region(next_regions, settings)
 
 def should_stop(depth, settings):
     i = randint(0, settings.stop_constant)
@@ -100,7 +101,7 @@ def random_fields(region, settings):
 def random_logical_region_trees(task_name, settings):
     num_trees = randint(1, settings.max_new_trees_per_task)
     logical_region_trees = []
-    for i in xrange(0, num_trees):
+    for i in xrange(1, num_trees + 1):
         logical_region_trees.append(random_logical_region_tree(task_name, settings))
     return logical_region_trees
 
