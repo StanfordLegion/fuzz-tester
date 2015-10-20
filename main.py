@@ -8,6 +8,7 @@ test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 def main():
     settings = TestGeneratorSettings()
     settings.seed = 100
+    settings.num_cases = 2
     run_timestamped_test_suite(settings)
 
 def run_timestamped_test_suite(settings):

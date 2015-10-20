@@ -1,5 +1,6 @@
 from os import mkdir
 from os.path import *
+from re import search
 
 from subprocess import *
 
@@ -22,7 +23,10 @@ def run_test(test_location, test_case):
     run_res = run_case(test_location, test_case.name)
     if run_res != '':
         return run_res
-    return run_legion_spy(test_location, test_case.name)
+    run_spy_res = run_legion_spy(test_location, test_case.name)
+    if run_spy_res != '':
+        return run_spy_res
+    return parse_spy_output(test_location)
 
 def create_test_dir(test_location, test_case):
     mkdir(test_location)
@@ -55,15 +59,31 @@ def run_case(test_location, test_name):
         return 'run error code ' + str(run_process.returncode)
 
 def run_legion_spy(test_location, test_name):
-    spy_log_file = join(test_location, "spy.log")
+    spy_log_file = join(test_location, 'spy.log')
+    spy_output_file = join(test_location, 'spy_results.txt')
     spy_options = ' -l '
-    run_legion_spy_command_string = legion_spy_path + spy_options + spy_log_file
+    run_legion_spy_command_string = legion_spy_path + spy_options + spy_log_file + ' > ' + spy_output_file
     spy_process = Popen(run_legion_spy_command_string, shell=True, stdout=PIPE)
     spy_process.communicate()
     if spy_process.returncode == 0:
-        return parse_legion_spy_output(spy_process)
+        return ''
     else:
         return 'legion spy error code ' + str(spy_process.returncode)
 
-def parse_legion_spy_output(spy_process):
-    return ''
+def parse_spy_output(test_location):
+    spy_result_str = open(join(test_location, 'spy_results.txt')).read()
+    return parse_spy_str(spy_result_str)
+
+def parse_spy_str(result_str):
+    lines_wo_leading_whitespace = map(lambda l: l.lstrip(), result_str.split('\n'))
+    dep_lines = filter(lambda l: l.startswith('Mapping Dependence Errors:'), lines_wo_leading_whitespace)
+    if len(dep_lines) == 0:
+        return 'Could not find mapping dependence line'
+    else:
+        dep_errors = int(search('(.+): ([0-9]+)', dep_lines[0]).group(2))
+        if dep_errors == 0:
+            return ''
+        else:
+            return 'dependence errors: ' + str(dep_errors)
+        
+    
