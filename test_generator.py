@@ -65,20 +65,28 @@ def random_region_requirements(regions, settings):
     return rrs
 
 def random_region_requirement(regions, settings):
-    region = pick_random_region(regions, settings)
+    region_and_parent = pick_random_region_and_parent(regions, None, settings)
+    region = region_and_parent[0]
+    parent = region_and_parent[1]
     fields = random_fields(region, settings)
     privilege = settings.privileges[randint(0, len(settings.privileges) - 1)]
     coherence = settings.coherences[randint(0, len(settings.coherences) - 1)]
-    return RegionRequirement(region, fields, privilege, coherence)
+    return RegionRequirement(region, parent, fields, privilege, coherence)
 
-def pick_random_region(regions, settings):
-    next_region = regions[randint(0, len(regions) - 1)]
+def pick_random_region_and_parent(regions, parent, settings):
+    region_ind = randint(0, len(regions) - 1)
+    next_region = regions[region_ind]
     next_region.should_print()
     if should_stop(0, settings) or next_region.partitions == []:
-        return next_region
+        if parent is None:
+            return (next_region, next_region)
+        else:
+            return (next_region, parent)
     next_partition = next_region.partitions[randint(0, len(next_region.partitions) - 1)]
     next_partition.should_print()
-    return pick_random_region(next_partition.subspaces, settings)
+    next_regions = next_partition.subspaces
+    next_parent = next_region
+    return pick_random_region_and_parent(next_partition.subspaces, next_parent, settings)
 
 def should_stop(depth, settings):
     i = randint(0, settings.stop_constant)
