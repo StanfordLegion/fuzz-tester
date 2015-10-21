@@ -20,10 +20,20 @@ class IndexPartition():
         return code
 
     def color_max(self):
-        return max(self.subspaces, key=self.subspaces.get)
+        max_color = -10
+        for color in self.subspaces:
+            if color > max_color:
+                max_color = color
+        return max_color
+#        return max(self.subspaces, key=self.subspaces.get)
 
     def color_min(self):
-        return min(self.subspaces, key=self.subspaces.get)
+        min_color = 100000000
+        for color in self.subspaces:
+            if color < min_color:
+                min_color = color
+        return min_color
+#        return min(self.subspaces, key=self.subspaces.get)
 
     def is_disjoint(self):
         disjoint = True
