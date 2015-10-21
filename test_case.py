@@ -12,7 +12,7 @@ class TestCase():
         self.top_level_task = top_level_task
 
     def pretty_field_id_enums(self):
-        all_field_spaces = self.top_level_task.collect_field_spaces()
+        all_field_spaces = filter(lambda fs: fs.is_needed, self.top_level_task.collect_field_spaces())
         return map(lambda x: cpp_enum(x.name.upper(), map(lambda y: cpp_var(y), x.field_ids)), all_field_spaces)
 
     def pretty_task_id_enum(self):

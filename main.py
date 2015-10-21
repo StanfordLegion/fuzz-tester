@@ -5,10 +5,22 @@ from test_suite import *
 
 test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 
+# Produces legion spy errors:
+# settings.seed = 100
+# settings.num_cases = 1
+# settings.max_new_trees_per_task = 1
+# settings.max_task_children = 500
+# settings.max_depth = 6
+# settings.max_task_tree_depth = 1
+
 def main():
     settings = TestGeneratorSettings()
-    settings.seed = 100
-    settings.num_cases = 2
+    settings.seed = 104
+    settings.num_cases = 1
+    settings.max_new_trees_per_task = 1
+    settings.max_task_children = 100
+    settings.max_depth = 1
+    settings.max_task_tree_depth = 1
     run_timestamped_test_suite(settings)
 
 def run_timestamped_test_suite(settings):
