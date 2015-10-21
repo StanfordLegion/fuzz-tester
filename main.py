@@ -46,4 +46,5 @@ def print_results(result_str, num_cases, num_failed):
     print result_str
     print '================================================================='
 
-main()
+if __name__ == "__main__":
+    main()
