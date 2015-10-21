@@ -26,6 +26,7 @@ class TestGeneratorSettings():
         self.max_colors_per_partition = 5
         self.stop_constant = 30
         self.max_depth = 3
+        self.max_task_tree_depth = 3
         self.privileges = ['READ_ONLY', 'READ_WRITE']
         self.coherences = ['EXCLUSIVE', 'ATOMIC', 'SIMULTANEOUS']
 
@@ -37,28 +38,36 @@ def generate_random_cases(settings):
     return cases
 
 def random_case(test_num, settings):
-    t = Task("top_level_task", [])
+    t = Task('top_level_task', [])
     logical_regions = random_logical_region_trees(t.name, settings)
     t.logical_regions_created = logical_regions
-    subtasks = random_tasks(t.logical_regions_created, settings)
-    t.child_tasks = subtasks
-    case = TestCase("test_" + str(test_num), t)
+    t.child_tasks = random_tasks(t.logical_regions_created, settings, 0)
+    case = TestCase('test_' + str(test_num), t)
     return case
 
-def random_tasks(regions, settings):
+def random_tasks(regions, settings, depth):
+    if depth >= settings.max_task_tree_depth:
+        return []
     num_tasks = randint(1, settings.max_task_children)
     tasks = []
     for i in xrange(num_tasks):
-        tasks.append(random_task(regions, settings))
+        tasks.append(random_task(regions, settings, depth))
     return tasks
 
-def random_task(regions, settings):
+def random_task(regions, settings, depth):
     name = next_name('task')
     rrs = random_region_requirements(regions, settings)
-    return Task(name, rrs)
+    t = Task(name, rrs)
+    t.logical_regions_created = random_logical_region_trees(t.name, settings)
+    child_tasks = random_tasks(t.logical_regions_created, settings, depth+1)
+    t.child_tasks = child_tasks
+    return t
 
 def random_region_requirements(regions, settings):
-    num_reqs = randint(0, settings.max_region_requirements_per_task)
+    if regions != []:
+        num_reqs = randint(0, settings.max_region_requirements_per_task)
+    else:
+        num_reqs = 0
     rrs = []
     for i in xrange(num_reqs):
         rrs.append(random_region_requirement(regions, settings))

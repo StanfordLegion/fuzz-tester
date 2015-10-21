@@ -9,8 +9,14 @@ class Task():
         self.region_requirements = region_requirements
         self.child_tasks = []
 
+    def all_field_spaces(self):
+        return map(lambda rr: rr.region.field_space, self.region_requirements)
+
     def collect_field_spaces(self):
-        return map(lambda x: x.field_space, self.logical_regions_created)
+        all_field_spaces = map(lambda lr: lr.field_space, self.logical_regions_created)
+        for child in self.child_tasks:
+            all_field_spaces += child.collect_field_spaces()
+        return all_field_spaces
 
     def collect_tasks(self):
         all_tasks = [self]
@@ -33,7 +39,7 @@ class Task():
         return init_code
 
     def logical_regions_created_init(self):
-        return list(chain(*map(lambda lr: lr.init_code(), self.logical_regions_created)))
+        return list(chain(*map(lambda lr: lr.init_code(self.name), self.logical_regions_created)))
 
     def logical_regions_init(self):
         return self.index_spaces_init() + self.field_spaces_init() + self.logical_regions_created_init()

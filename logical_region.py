@@ -24,8 +24,8 @@ class LogicalRegion():
             code.extend(p.init_code(self.name))
         return code
 
-    def init_code(self):
-        if self.is_needed:
+    def init_code(self, task_name):
+        if self.is_needed and task_name == self.task_name:
             return self.pretty_code()
         else:
             return []
