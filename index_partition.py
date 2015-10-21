@@ -25,11 +25,21 @@ class IndexPartition():
     def color_min(self):
         return min(self.subspaces, key=self.subspaces.get)
 
+    def is_disjoint(self):
+        disjoint = True
+        for color1 in self.subspaces:
+            for color2 in self.subspaces:
+                sub1 = self.subspaces[color1]
+                sub2 = self.subspaces[color2]
+                if color1 != color2 and sub1.overlaps(sub2):
+                    disjoint = False
+        return disjoint
+
     def pretty_code(self, parent_name):
         color_dom_name = self.name + '_color_domain'
         dom_name = self.name + '_coloring'
         dom_init = 'Domain ' + color_dom_name + ' = Domain::from_rect<1>(Rect<1>(Point<1>(' + str(self.color_min()) + '), Point<1>(' + str(self.color_max()) + ')))'
-        part_init = 'IndexPartition ' + self.name + ' = ' + 'runtime->create_index_partition(ctx, ' + parent_name + ', ' + color_dom_name + ', ' + dom_name + ', false)'
+        part_init = 'IndexPartition ' + self.name + ' = ' + 'runtime->create_index_partition(ctx, ' + parent_name + ', ' + color_dom_name + ', ' + dom_name + ', ' + str(self.is_disjoint()).lower() + ')'
         code = self.domain_coloring_init() + [dom_init, part_init]
         for color in self.subspaces:
             s = self.subspaces[color]

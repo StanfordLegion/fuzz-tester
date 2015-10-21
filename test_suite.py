@@ -80,10 +80,11 @@ def parse_spy_str(result_str):
     if len(dep_lines) == 0:
         return 'Could not find mapping dependence line'
     else:
-        dep_errors = int(search('(.+): ([0-9]+)', dep_lines[0]).group(2))
-        if dep_errors == 0:
-            return ''
-        else:
-            return 'dependence errors: ' + str(dep_errors)
-        
-    
+        return parse_dep_error_line(dep_lines[0])
+
+def parse_dep_error_line(dep_line):
+    dep_errors = int(search('(.+): ([0-9]+)', dep_line).group(2))
+    if dep_errors == 0:
+        return ''
+    else:
+        return 'dependence errors: ' + str(dep_errors)

@@ -9,6 +9,12 @@ class IndexSubspace():
         self.partitions = partitions
         self.is_needed = False
 
+    def disjoint(self, other):
+        return self.end < other.start or other.end < self.start
+
+    def overlaps(self, other):
+        return not self.disjoint(other)
+
     def pretty_code(self, parent_name, color):
         init_call = 'runtime->get_index_subspace(ctx, ' + parent_name + ', ' + str(color) + ')'
         is_init = cpp_assign('IndexSpace ' + self.name, init_call)
