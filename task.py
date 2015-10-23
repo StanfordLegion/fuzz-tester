@@ -95,7 +95,6 @@ class Task():
 
     def shouldnt_print_anything(self):
         map(lambda t: t.shouldnt_print_regions(), self.collect_tasks())
-        
 
 # Task argument boilerplate
 runtime = cpp_formal_param(cpp_ptr(cpp_var("HighLevelRuntime")), cpp_var("runtime"))
@@ -103,4 +102,3 @@ context = cpp_formal_param(cpp_var("Context"), cpp_var("ctx"))
 regions = cpp_formal_param(cpp_const(cpp_ref(cpp_var("std::vector<PhysicalRegion>"))), cpp_var("regions"))
 task = cpp_formal_param(cpp_const(cpp_ptr(cpp_var("Task"))), cpp_var("task"))
 task_args = [task, regions, context, runtime]
-    

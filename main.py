@@ -33,7 +33,7 @@ def run_and_reduce_timestamped_test_suite(settings):
     if len(failed_tests) == 0:
         process_and_print_results(results)
     else:
-        new_case = reduce_failed_test(test_dir, failed_tests[0])
+        new_case = reduce_failed_test(test_dir, failed_tests[0], results[failed_tests[0].name])
     
 def run_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")

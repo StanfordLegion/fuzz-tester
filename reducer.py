@@ -1,4 +1,4 @@
-from copy import copy
+from copy import *
 from datetime import datetime
 from os.path import *
 from random import *
@@ -7,41 +7,56 @@ from task import *
 from test_case import *
 from test_suite import *
 
-max_reductions = 20
+max_reductions = 70
 
-def reduce_failed_test(test_dir, failing_case):
+def reduce_failed_test(test_dir, failing_case, original_fail_msg):
     suite_dir = "reduction_test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     mkdir(join(test_dir, suite_dir))
     fail_case_stack = [failing_case]
     num_reductions = 0
     while num_reductions < max_reductions:
         last_failing_case = fail_case_stack[len(fail_case_stack) - 1]
-        next_case = copy_with_random_leaf_task_deleted(last_failing_case)
+        next_case = copy_with_random_reduction(last_failing_case)
         test_name = next_case.name + '_' + str(num_reductions)
         test_loc = join(test_dir, suite_dir, test_name)
         run_res = run_test(test_loc, next_case)
-        if run_res != '':
+        if run_res == original_fail_msg:
+            print 'APPENDING NEW FAILED TEST:', test_name
+            print run_res
             fail_case_stack.append(next_case)
         num_reductions += 1
     return fail_case_stack[len(fail_case_stack) - 1]
 
-def copy_with_random_leaf_task_deleted(failing_case):
-    new_task_tree = copy_task_tree_with_deletion(failing_case.top_level_task)
-    new_task_tree.shouldnt_print_anything()
-    new_task_tree.decide_what_should_print()
-    copy = TestCase(failing_case.name, new_task_tree)
-    return copy
-
-def copy_task_tree_with_deletion(task):
-    copy_task = copy(task)
-    if copy_task.child_tasks == []:
-        return copy_task
+def copy_with_random_reduction(failing_case):
+    new_case = deepcopy(failing_case)
+    if randint(0, 1) == 0:
+        delete_leaf_task(new_case.top_level_task)
     else:
-        leaf_children = filter(lambda t: t.child_tasks == [], copy_task.child_tasks)
-        non_leaf_childran = filter(lambda t: not t in leaf_children, copy_task.child_tasks)
-        if leaf_children == []:
-            return copy_task
-        else:
+        delete_field_from_region_requirement(new_case.top_level_task)
+    return new_case
+
+def delete_leaf_task(task):
+    delete_random_leaf(task)
+    task.shouldnt_print_anything()
+    task.decide_what_should_print()
+
+def delete_random_leaf(task):
+    if task.child_tasks != []:
+        leaf_children = filter(lambda t: t.child_tasks == [], task.child_tasks)
+        non_leaf_children = filter(lambda t: not t in leaf_children, task.child_tasks)
+        if leaf_children != []:
             leaf_children.pop(randint(0, len(leaf_children) - 1))
-            copy_task.child_tasks = leaf_children
-            return copy_task
+            task.child_tasks = leaf_children + non_leaf_children
+        elif non_leaf_children != []:
+            next_node = non_leaf_children[randint(0, len(non_leaf_children) - 1)]
+            delete_random_leaf(next_node)
+
+def delete_field_from_region_requirement(task):
+    all_tasks = task.collect_tasks()
+    all_rrs = list(chain(*map(lambda t: t.region_requirements, all_tasks)))
+    rr_to_delete_from = all_rrs[randint(0, len(all_rrs) - 1)]
+    if rr_to_delete_from.fields != []:
+        fields = rr_to_delete_from.fields
+        ind = randint(0, len(fields) - 1)
+        print 'DELETING FIELD', fields[ind]
+        fields.pop(ind)
