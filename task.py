@@ -89,6 +89,12 @@ class Task():
         all_tasks = self.collect_tasks()
         map(lambda t: t.should_print_region_requirements(), all_tasks)
         map(lambda t: t.should_print_regions_created(), all_tasks)
+
+    def shouldnt_print_regions(self):
+        map(lambda lr: lr.shouldnt_print_anything(), self.logical_regions_created)
+
+    def shouldnt_print_anything(self):
+        map(lambda t: t.shouldnt_print_regions(), self.collect_tasks())
         
 
 # Task argument boilerplate

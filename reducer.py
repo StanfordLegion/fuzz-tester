@@ -7,7 +7,7 @@ from task import *
 from test_case import *
 from test_suite import *
 
-max_reductions = 5
+max_reductions = 20
 
 def reduce_failed_test(test_dir, failing_case):
     suite_dir = "reduction_test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -27,6 +27,8 @@ def reduce_failed_test(test_dir, failing_case):
 
 def copy_with_random_leaf_task_deleted(failing_case):
     new_task_tree = copy_task_tree_with_deletion(failing_case.top_level_task)
+    new_task_tree.shouldnt_print_anything()
+    new_task_tree.decide_what_should_print()
     copy = TestCase(failing_case.name, new_task_tree)
     return copy
 

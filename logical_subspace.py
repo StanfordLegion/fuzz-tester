@@ -7,10 +7,18 @@ class LogicalSubspace():
         self.partitions = partitions
         self.is_needed = False
 
+    def shouldnt_print_anything(self):
+        self.shouldnt_print()
+        map(lambda p: p.shouldnt_print_anything(), self.partitions)
+
     def should_print_if_any_child_is_needed(self):
         if self.any_child_is_needed():
             self.should_print()
-        
+
+    def shouldnt_print(self):
+        self.is_needed = False
+        self.index_space.is_needed = False
+            
     def should_print(self):
         self.is_needed = True
         self.index_space.is_needed = True

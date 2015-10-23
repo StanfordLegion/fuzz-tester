@@ -22,7 +22,15 @@ class LogicalPartition():
             if s.is_needed:
                 child_is_needed = True
         return child_is_needed
-            
+
+    def shouldnt_print_anything(self):
+        self.shouldnt_print()
+        map(lambda c: self.subspaces[c].shouldnt_print_anything(), self.subspaces)
+
+    def shouldnt_print(self):
+        self.is_needed = False
+        self.index_partition.is_needed = False
+        
     def should_print(self):
         self.is_needed = True
         self.index_partition.is_needed = True

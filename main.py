@@ -22,8 +22,8 @@ def main():
     settings.max_task_children = 100
     settings.max_depth = 1
     settings.max_task_tree_depth = 1
-    run_timestamped_test_suite(settings)
-#    run_and_reduce_timestamped_test_suite(settings)
+#    run_timestamped_test_suite(settings)
+    run_and_reduce_timestamped_test_suite(settings)
 
 def run_and_reduce_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
