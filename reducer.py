@@ -7,7 +7,7 @@ from task import *
 from test_case import *
 from test_suite import *
 
-max_reductions = 70
+max_reductions = 150
 
 def reduce_failed_test(test_dir, failing_case, original_fail_msg):
     suite_dir = "reduction_test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -54,8 +54,9 @@ def delete_random_leaf(task):
 def delete_field_from_region_requirement(task):
     all_tasks = task.collect_tasks()
     all_rrs = list(chain(*map(lambda t: t.region_requirements, all_tasks)))
-    rr_to_delete_from = all_rrs[randint(0, len(all_rrs) - 1)]
-    if rr_to_delete_from.fields != []:
+    legal_rrs = filter(lambda rr: len(rr.fields) > 1, all_rrs)
+    if legal_rrs != []:
+        rr_to_delete_from = legal_rrs[randint(0, len(legal_rrs) - 1)]
         fields = rr_to_delete_from.fields
         ind = randint(0, len(fields) - 1)
         print 'DELETING FIELD', fields[ind]
