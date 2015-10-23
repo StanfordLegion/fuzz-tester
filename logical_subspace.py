@@ -7,10 +7,22 @@ class LogicalSubspace():
         self.partitions = partitions
         self.is_needed = False
 
+    def should_print_if_any_child_is_needed(self):
+        if self.any_child_is_needed():
+            self.should_print()
+        
     def should_print(self):
         self.is_needed = True
         self.index_space.is_needed = True
 
+    def any_child_is_needed(self):
+        child_is_needed = False
+        for p in self.partitions:
+            p.should_print_if_any_child_is_needed()
+            if p.is_needed:
+                child_is_needed = True
+        return child_is_needed
+        
     def pretty_code(self, parent_name, color):
         init_call = 'LogicalRegion ' + self.name + ' = runtime->get_logical_subregion_by_color(ctx, ' + parent_name + ', ' + str(color) + ')'
         code = [init_call]

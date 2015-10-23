@@ -10,6 +10,19 @@ class LogicalPartition():
         self.index_partition = index_partition
         self.is_needed = False
 
+    def should_print_if_any_child_is_needed(self):
+        if self.any_child_is_needed():
+            self.should_print()
+
+    def any_child_is_needed(self):
+        child_is_needed = False
+        for color in self.subspaces:
+            s = self.subspaces[color]
+            s.should_print_if_any_child_is_needed()
+            if s.is_needed:
+                child_is_needed = True
+        return child_is_needed
+            
     def should_print(self):
         self.is_needed = True
         self.index_partition.is_needed = True

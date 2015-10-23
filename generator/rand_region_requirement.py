@@ -25,16 +25,16 @@ def random_region_requirement(regions, settings):
 def pick_random_region_and_parent(regions, settings):
     region_ind = randint(0, len(regions) - 1)
     region_to_select_from = regions[region_ind]
-    region_to_select_from.should_print()
+#    region_to_select_from.should_print()
     return (pick_random_region([region_to_select_from], settings), region_to_select_from)
 
 def pick_random_region(regions, settings):
     next_region = regions[randint(0, len(regions) - 1)]
-    next_region.should_print()
+#    next_region.should_print()
     if should_stop(0, settings) or next_region.partitions == []:
         return next_region
     next_partition = next_region.partitions[randint(0, len(next_region.partitions) - 1)]
-    next_partition.should_print()
+#    next_partition.should_print()
     next_regions = next_partition.subspaces
     return pick_random_region(next_regions, settings)
 

@@ -21,10 +21,7 @@ def reduce_failed_test(test_dir, failing_case):
         test_loc = join(test_dir, suite_dir, test_name)
         run_res = run_test(test_loc, next_case)
         if run_res != '':
-            print 'FAILED'
             fail_case_stack.append(next_case)
-        else:
-            print 'MODIFIED CASE PASSED'
         num_reductions += 1
     return fail_case_stack[len(fail_case_stack) - 1]
 
@@ -43,9 +40,6 @@ def copy_task_tree_with_deletion(task):
         if leaf_children == []:
             return copy_task
         else:
-            print 'about to remove, size', str(len(leaf_children))
             leaf_children.pop(randint(0, len(leaf_children) - 1))
-            print 'leaf children size', str(len(leaf_children))
             copy_task.child_tasks = leaf_children
-            print 'removed task, num tasks: ', str(len(copy_task.child_tasks))
             return copy_task

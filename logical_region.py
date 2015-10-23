@@ -10,10 +10,22 @@ class LogicalRegion():
         self.is_needed = False
         self.partitions = partitions
 
+    def should_print_if_any_child_is_needed(self):
+        if self.any_child_is_needed():
+            self.should_print()
+
     def should_print(self):
         self.is_needed = True
         self.field_space.is_needed = True
         self.index_space.is_needed = True
+
+    def any_child_is_needed(self):
+        child_is_needed = False
+        for p in self.partitions:
+            p.should_print_if_any_child_is_needed()
+            if p.is_needed:
+                child_is_needed = True
+        return child_is_needed
 
     def pretty_code(self):
         region_decl_str = cpp_var('LogicalRegion ' + self.name)

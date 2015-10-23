@@ -79,6 +79,18 @@ class Task():
     def id(self):
         return self.name.upper() + "_ID"
 
+    def should_print_region_requirements(self):
+        map(lambda rr: rr.should_print(), self.region_requirements)
+
+    def should_print_regions_created(self):
+        map(lambda lr: lr.should_print_if_any_child_is_needed(), self.logical_regions_created)
+
+    def decide_what_should_print(self):
+        all_tasks = self.collect_tasks()
+        map(lambda t: t.should_print_region_requirements(), all_tasks)
+        map(lambda t: t.should_print_regions_created(), all_tasks)
+        
+
 # Task argument boilerplate
 runtime = cpp_formal_param(cpp_ptr(cpp_var("HighLevelRuntime")), cpp_var("runtime"))
 context = cpp_formal_param(cpp_var("Context"), cpp_var("ctx"))

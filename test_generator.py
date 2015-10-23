@@ -27,5 +27,6 @@ def random_case(test_num, settings):
     logical_regions = random_logical_region_trees(t.name, settings)
     t.logical_regions_created = logical_regions
     t.child_tasks = random_tasks(t.logical_regions_created, settings, 0)
+    t.decide_what_should_print()
     case = TestCase('test_' + str(test_num), t)
     return case
