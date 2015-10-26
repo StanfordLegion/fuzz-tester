@@ -16,14 +16,14 @@ test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 
 def main():
     settings = TestGeneratorSettings()
-    settings.seed = 104
-    settings.num_cases = 1
+    settings.seed = 236
+    settings.num_cases = 10
     settings.max_new_trees_per_task = 1
     settings.max_task_children = 100
     settings.max_depth = 1
     settings.max_task_tree_depth = 1
-#    run_timestamped_test_suite(settings)
-    run_and_reduce_timestamped_test_suite(settings)
+    run_timestamped_test_suite(settings)
+#    run_and_reduce_timestamped_test_suite(settings)
 
 def run_and_reduce_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")

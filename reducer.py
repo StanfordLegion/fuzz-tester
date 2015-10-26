@@ -7,7 +7,7 @@ from task import *
 from test_case import *
 from test_suite import *
 
-max_reductions = 150
+max_reductions = 200
 
 def reduce_failed_test(test_dir, failing_case, original_fail_msg):
     suite_dir = "reduction_test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -29,10 +29,13 @@ def reduce_failed_test(test_dir, failing_case, original_fail_msg):
 
 def copy_with_random_reduction(failing_case):
     new_case = deepcopy(failing_case)
-    if randint(0, 1) == 0:
+    i = randint(0, 2)
+    if i == 0:
         delete_leaf_task(new_case.top_level_task)
-    else:
+    elif i == 1:
         delete_field_from_region_requirement(new_case.top_level_task)
+    else:
+        delete_rr_with_one_field(new_case.top_level_task)
     return new_case
 
 def delete_leaf_task(task):
@@ -61,3 +64,29 @@ def delete_field_from_region_requirement(task):
         ind = randint(0, len(fields) - 1)
         print 'DELETING FIELD', fields[ind]
         fields.pop(ind)
+
+def delete_rr_with_one_field(task):
+    delete_one_field_rr(task)
+    task.shouldnt_print_anything()
+    task.decide_what_should_print()
+    return selected_task
+
+def delete_one_field_rr(task):
+    all_tasks = task.collect_tasks()
+    all_tasks_to_delete_from = filter(lambda t: has_rr_with_one_field(t), all_tasks)
+    if len(all_tasks_to_delete_from) == 0:
+        return task
+    i = randint(0, len(all_tasks_to_delete_from) - 1)
+    selected_task = all_tasks_to_delete_from[i]
+    delete_first_rr_with_one_field(selected_task)
+    
+def has_rr_with_one_field(task):
+    return len(filter(lambda rr: len(rr.fields) == 1, task.region_requirements)) > 0
+
+def delete_first_rr_with_one_field(task):
+    i = 0
+    for rr in task.region_requirements:
+        if len(rr.fields) == 1:
+            task.region_requirements.pop(i)
+            break
+        i += 1
