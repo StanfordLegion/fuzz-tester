@@ -6,18 +6,10 @@ from test_suite import *
 
 test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 
-# Produces legion spy errors:
-# settings.seed = 100
-# settings.num_cases = 1
-# settings.max_new_trees_per_task = 1
-# settings.max_task_children = 500
-# settings.max_depth = 6
-# settings.max_task_tree_depth = 1
-
 def main():
     settings = TestGeneratorSettings()
     settings.seed = 236
-    settings.num_cases = 10
+    settings.num_cases = 1
     settings.max_new_trees_per_task = 1
     settings.max_task_children = 100
     settings.max_depth = 1
@@ -48,8 +40,8 @@ def process_and_print_results(results):
     num_failed = 0
     for case in results:
         num_cases += 1
-        if results[case] != '':
-            result_str += case + '\tFAILED\t' + results[case] + '\n'
+        if test_failed(results[case]):
+            result_str += case + '\tFAILED\t' + results[case].to_string() + '\n'
             all_passed = False
             num_failed += 1
     if all_passed:
