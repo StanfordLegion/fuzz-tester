@@ -8,8 +8,8 @@ test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 
 def main():
     settings = TestGeneratorSettings()
-    settings.seed = 236
-    settings.num_cases = 1
+    settings.seed = 237
+    settings.num_cases = 10
     settings.max_new_trees_per_task = 1
     settings.max_task_children = 100
     settings.max_depth = 1

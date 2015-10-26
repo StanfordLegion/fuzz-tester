@@ -43,9 +43,9 @@ def compile_case(test_dir):
     build_process = Popen('make -j4 -C ' + test_dir, shell=True)
     build_process.communicate()
     if build_process.returncode == 0:
-        return TestRunInfo(True, '')
+        return success()
     else:
-        return TestRunInfo(False, 'build error code ' + str(build_process.returncode))
+        return build_failed('build error code ' + str(build_process.returncode))
 
 def run_case(test_location, test_name):
     spy_log_file = join(test_location, "spy.log")
@@ -55,9 +55,9 @@ def run_case(test_location, test_name):
     run_process = Popen(run_command_string, shell=True)
     run_process.communicate()
     if run_process.returncode == 0:
-        return TestRunInfo(True, '')
+        return success()
     else:
-        return TestRunInfo(False, 'run error code ' + str(run_process.returncode))
+        return run_failed('run error code ' + str(run_process.returncode))
 
 def run_legion_spy(test_location, test_name):
     spy_log_file = join(test_location, 'spy.log')
@@ -67,7 +67,7 @@ def run_legion_spy(test_location, test_name):
     spy_process = Popen(run_legion_spy_command_string, shell=True, stdout=PIPE)
     spy_process.communicate()
     if spy_process.returncode == 0:
-        return TestRunInfo(True, '')
+        return success()
     else:
         return TestRunInfo(False, 'legion spy error code ' + str(spy_process.returncode))
 
@@ -79,13 +79,13 @@ def parse_spy_str(result_str):
     lines_wo_leading_whitespace = map(lambda l: l.lstrip(), result_str.split('\n'))
     dep_lines = filter(lambda l: l.startswith('Mapping Dependence Errors:'), lines_wo_leading_whitespace)
     if len(dep_lines) == 0:
-        return TestRunInfo(False, 'Could not find mapping dependence line')
+        return parse_failed('Could not find mapping dependence line')
     else:
         return parse_dep_error_line(dep_lines[0])
 
 def parse_dep_error_line(dep_line):
     dep_errors = int(search('(.+): ([0-9]+)', dep_line).group(2))
     if dep_errors == 0:
-        return TestRunInfo(True, '')
+        return success()
     else:
-        return TestRunInfo(False, 'dependence errors: ' + str(dep_errors))
+        return dependence_errors('dependence errors: ' + str(dep_errors))
