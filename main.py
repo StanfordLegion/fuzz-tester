@@ -8,20 +8,21 @@ test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 
 def main():
     settings = TestGeneratorSettings()
-    settings.seed = 237
-    settings.num_cases = 10
+    settings.seed = 13423
+    settings.num_cases = 3
     settings.max_new_trees_per_task = 1
     settings.max_task_children = 100
     settings.max_depth = 1
     settings.max_task_tree_depth = 1
-    run_timestamped_test_suite(settings)
-#    run_and_reduce_timestamped_test_suite(settings)
+    settings.privileges = ['READ_WRITE', 'READ_ONLY']
+#    run_timestamped_test_suite(settings)
+    run_and_reduce_timestamped_test_suite(settings)
 
 def run_and_reduce_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     cases = generate_random_cases(settings)
     results = run_test_suite(test_dir, suite_dir, cases)
-    failed_tests = filter(lambda c: results[c.name] != '', cases)
+    failed_tests = filter(lambda c: test_failed(results[c.name]), cases)
     if len(failed_tests) == 0:
         process_and_print_results(results)
     else:

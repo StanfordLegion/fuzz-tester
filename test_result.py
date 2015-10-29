@@ -10,6 +10,12 @@ class TestRunInfo():
 class TestResult():
     SUCCESS, BUILD_FAILED, RUN_FAILED, PARSE_FAILED, DEPENDENCE_ERRORS = range(5)
 
+def same_result(l, r):
+    return l.result == r.result
+
+def same_test_info(l, r):
+    return l.result == r.result and l.result_str == r.result_str
+
 def build_failed(msg):
     return TestRunInfo(TestResult.BUILD_FAILED, msg)
 

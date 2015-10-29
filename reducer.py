@@ -7,9 +7,13 @@ from task import *
 from test_case import *
 from test_suite import *
 
-max_reductions = 200
+max_reductions = 300
 
-def reduce_failed_test(test_dir, failing_case, original_fail_msg):
+#failing case that does not have a read before write error: /Users/dillon/PythonWorkspace/test_gen/suites/reduction_test_2015_10_28_16_39_52/test_1_4
+#another: ~/PythonWorkspace/test_gen/suites/reduction_test_2015_10_28_16_42_50/test_1_99/
+#yet another: ~/PythonWorkspace/test_gen/suites/reduction_test_2015_10_28_16_51_48/test_1_198/
+# and another: /Users/dillon/PythonWorkspace/test_gen/suites/reduction_test_2015_10_28_17_04_21/test_1_296
+def reduce_failed_test(test_dir, failing_case, original_fail_result):
     suite_dir = "reduction_test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     mkdir(join(test_dir, suite_dir))
     fail_case_stack = [failing_case]
@@ -20,7 +24,8 @@ def reduce_failed_test(test_dir, failing_case, original_fail_msg):
         test_name = next_case.name + '_' + str(num_reductions)
         test_loc = join(test_dir, suite_dir, test_name)
         run_res = run_test(test_loc, next_case)
-        if run_res == original_fail_msg:
+        if same_result(run_res, original_fail_result):
+#        if same_test_info(run_res, original_fail_result):
             print 'APPENDING NEW FAILED TEST:', test_name
             print run_res
             fail_case_stack.append(next_case)
@@ -29,10 +34,10 @@ def reduce_failed_test(test_dir, failing_case, original_fail_msg):
 
 def copy_with_random_reduction(failing_case):
     new_case = deepcopy(failing_case)
-    i = randint(0, 2)
-    if i == 0:
+    i = randint(0, 100)
+    if i > 50:
         delete_leaf_task(new_case.top_level_task)
-    elif i == 1:
+    elif i > 30:
         delete_field_from_region_requirement(new_case.top_level_task)
     else:
         delete_rr_with_one_field(new_case.top_level_task)
@@ -69,7 +74,7 @@ def delete_rr_with_one_field(task):
     delete_one_field_rr(task)
     task.shouldnt_print_anything()
     task.decide_what_should_print()
-    return selected_task
+    return task
 
 def delete_one_field_rr(task):
     all_tasks = task.collect_tasks()
@@ -90,3 +95,4 @@ def delete_first_rr_with_one_field(task):
             task.region_requirements.pop(i)
             break
         i += 1
+    return
