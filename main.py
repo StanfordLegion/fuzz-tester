@@ -8,13 +8,12 @@ test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 
 def main():
     settings = TestGeneratorSettings()
-    settings.seed = 13423
-    settings.num_cases = 3
+    settings.seed = 13424
+    settings.num_cases = 1
     settings.max_new_trees_per_task = 1
     settings.max_task_children = 100
     settings.max_depth = 1
     settings.max_task_tree_depth = 1
-    settings.privileges = ['READ_WRITE', 'READ_ONLY']
 #    run_timestamped_test_suite(settings)
     run_and_reduce_timestamped_test_suite(settings)
 

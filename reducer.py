@@ -7,12 +7,13 @@ from task import *
 from test_case import *
 from test_suite import *
 
-max_reductions = 300
+max_reductions = 100
 
 #failing case that does not have a read before write error: /Users/dillon/PythonWorkspace/test_gen/suites/reduction_test_2015_10_28_16_39_52/test_1_4
 #another: ~/PythonWorkspace/test_gen/suites/reduction_test_2015_10_28_16_42_50/test_1_99/
 #yet another: ~/PythonWorkspace/test_gen/suites/reduction_test_2015_10_28_16_51_48/test_1_198/
 # and another: /Users/dillon/PythonWorkspace/test_gen/suites/reduction_test_2015_10_28_17_04_21/test_1_296
+
 def reduce_failed_test(test_dir, failing_case, original_fail_result):
     suite_dir = "reduction_test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     mkdir(join(test_dir, suite_dir))
