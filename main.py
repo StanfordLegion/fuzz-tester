@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from reducer import *
+from reducer.linear import *
 from test_generator import *
 from test_suite import *
 
