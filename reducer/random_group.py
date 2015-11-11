@@ -6,8 +6,8 @@ from task import *
 from test_case import *
 from test_suite import *
 
-SUCCESS_THRESHOLD = 5
-MAX_REDUCTIONS_PER_GROUP = 10
+SUCCESS_THRESHOLD = 15
+MAX_REDUCTIONS_PER_GROUP = 1
 
 def reduce_failed_test(test_dir, failing_case, original_fail_result):
     suite_dir = "reduction_test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -23,7 +23,7 @@ def reduce_failed_test(test_dir, failing_case, original_fail_result):
         run_res = run_test(test_loc, next_case)
         if same_result(run_res, original_fail_result):
             print 'APPENDING NEW FAILED TEST:', test_name
-            print run_res
+            print run_res.to_string()
             consecutive_successes = 0
             fail_case_stack.append(next_case)
         else:

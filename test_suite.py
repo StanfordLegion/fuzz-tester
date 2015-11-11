@@ -76,6 +76,7 @@ def parse_spy_output(test_location):
     return parse_spy_str(spy_result_str)
 
 def parse_spy_str(result_str):
+    result_str = result_str.replace('\r', '\n')
     lines_wo_leading_whitespace = map(lambda l: l.lstrip(), result_str.split('\n'))
     dep_lines = filter(lambda l: l.startswith('Mapping Dependence Errors:'), lines_wo_leading_whitespace)
     if len(dep_lines) == 0:
