@@ -9,21 +9,21 @@ test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 def main():
     settings = TestGeneratorSettings()
     settings.seed = 134221
-    settings.num_cases = 10
-    settings.max_new_trees_per_task = 1
-    settings.max_task_children = 100
-    settings.max_depth = 1
-    settings.max_task_tree_depth = 1
-    settings.privileges = ['READ_WRITE']
-    settings.coherences = ['EXCLUSIVE'] #, 'ATOMIC', '
-#    run_timestamped_test_suite(settings)
-    run_and_reduce_timestamped_test_suite(settings)
+    settings.num_cases = 1
+    settings.max_new_trees_per_task = 3
+    settings.max_task_children = 10
+    settings.max_depth = 4
+    settings.max_task_tree_depth = 2
+    settings.privileges = ['READ_WRITE', 'READ_ONLY']
+    settings.coherences = ['EXCLUSIVE', 'ATOMIC', 'SIMULTANEOUS'] #, 'ATOMIC', '
+    run_timestamped_test_suite(settings)
+#    run_and_reduce_timestamped_test_suite(settings)
 
 def run_and_reduce_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     cases = generate_random_cases(settings)
     results = run_test_suite(test_dir, suite_dir, cases)
-    failed_tests = filter(lambda c: test_failed(results[c.name]), cases)
+    failed_tests = filter(lambda c: test_failed_no_close(results[c.name]), cases)
     if len(failed_tests) == 0:
         process_and_print_results(results)
     else:

@@ -3,7 +3,7 @@ from random import *
 from index_space import *
 from field_space import *
 from generator.rand_logical_region import random_logical_region_trees
-from generator.task_tree import random_tasks
+from generator.rand_task_tree import random_tasks
 from generator.test_generator_settings import TestGeneratorSettings
 from generator.utils import should_stop
 from index_partition import *

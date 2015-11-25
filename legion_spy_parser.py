@@ -1,3 +1,8 @@
+from os.path import *
+from re import search
+
+from test_result import *
+
 def parse_spy_output(test_location):
     spy_result_str = open(join(test_location, 'spy_results.txt')).read()
     return parse_spy_str(spy_result_str)
@@ -9,7 +14,12 @@ def parse_spy_str(result_str):
     if len(dep_lines) == 0:
         return parse_failed('Could not find mapping dependence line')
     else:
-        return parse_dep_error_line(dep_lines[0])
+        err = parse_dep_error_line(dep_lines[0])
+        err.error_lines = parse_error_lines(lines_wo_leading_whitespace)
+        return err
+
+def parse_error_lines(lines):
+    return filter(lambda l: l.startswith('ERROR:'), lines)
 
 def parse_dep_error_line(dep_line):
     dep_errors = int(search('(.+): ([0-9]+)', dep_line).group(2))

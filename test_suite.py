@@ -1,6 +1,5 @@
 from os import mkdir
 from os.path import *
-from re import search
 
 from legion_spy_parser import *
 from subprocess import *
