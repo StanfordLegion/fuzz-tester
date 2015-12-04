@@ -1,7 +1,7 @@
 from random import randint
 
 from generator.rand_logical_region import random_logical_region_trees
-from generator.rand_region_requirement import random_region_requirements
+from generator.rand_region_requirement import *
 from name_source import next_name
 from task import Task
 
@@ -16,7 +16,7 @@ def random_tasks(regions, settings, depth):
 
 def random_task(regions, settings, depth):
     name = next_name('task')
-    rrs = random_region_requirements(regions, settings)
+    rrs = random_region_requirements_no_alias(regions, settings)
     t = Task(name, rrs)
     t.logical_regions_created = random_logical_region_trees(t.name, settings)
     child_tasks = random_tasks(t.logical_regions_created, settings, depth+1)

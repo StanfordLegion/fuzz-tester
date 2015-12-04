@@ -10,6 +10,15 @@ class LogicalRegion():
         self.is_needed = False
         self.partitions = partitions
 
+    def is_root_of(self, region):
+        if region.name == self.name:
+            return True
+        for p in self.partitions:
+            for s in p.subspaces:
+                if p.subspaces[s].is_root_of(region):
+                    return True
+        return False
+
     def shouldnt_print_anything(self):
         self.shouldnt_print()
         map(lambda p: p.shouldnt_print_anything(), self.partitions)

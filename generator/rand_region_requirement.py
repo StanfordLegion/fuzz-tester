@@ -13,6 +13,11 @@ def random_region_requirements(regions, settings):
         rrs.append(random_region_requirement(regions, settings))
     return rrs
 
+def random_region_requirements_no_alias(regions, settings):
+    rrs = random_region_requirements(regions, settings)
+    no_alias_rrs = delete_aliasing_requirements(regions, rrs)
+    return no_alias_rrs
+
 def random_region_requirement(regions, settings):
     region_and_parent = pick_random_region_and_parent(regions, settings)
     region = region_and_parent[0]

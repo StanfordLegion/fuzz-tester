@@ -8,12 +8,13 @@ test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 
 def main():
     settings = TestGeneratorSettings()
-    settings.seed = 134221
+    settings.seed = 134224
     settings.num_cases = 1
+    settings.max_region_requirements_per_task = 10
     settings.max_new_trees_per_task = 3
-    settings.max_task_children = 10
-    settings.max_depth = 4
-    settings.max_task_tree_depth = 2
+    settings.max_task_children = 100
+    settings.max_depth = 1
+    settings.max_task_tree_depth = 1
     settings.privileges = ['READ_WRITE', 'READ_ONLY']
     settings.coherences = ['EXCLUSIVE', 'ATOMIC', 'SIMULTANEOUS'] #, 'ATOMIC', '
     run_timestamped_test_suite(settings)
