@@ -37,7 +37,7 @@ def create_test_dir(test_location, test_case):
     makefile.write(makefile_string(test_case.name))
 
 def makefile_string(file_name):
-    return 'ifndef LG_RT_DIR\n$(error LG_RT_DIR variable is not defined, aborting build)\nendif\nDEBUG=1\nOUTPUT_LEVEL=LEVEL_DEBUG\nSHARED_LOWLEVEL=1\nCC_FLAGS=-DLEGION_SPY\nOUTFILE\t:= ' + file_name + '\nGEN_SRC\t:= ' + file_name + '.cc' + '\ninclude $(LG_RT_DIR)/runtime.mk\n'
+    return 'ifndef LG_RT_DIR\n$(error LG_RT_DIR variable is not defined, aborting build)\nendif\nDEBUG=1\nOUTPUT_LEVEL=LEVEL_DEBUG\nSHARED_LOWLEVEL=0\nUSE_CUDA=0\nUSE_GASNET=0\nCC_FLAGS=-DLEGION_SPY\nOUTFILE\t:= ' + file_name + '\nGEN_SRC\t:= ' + file_name + '.cc' + '\ninclude $(LG_RT_DIR)/runtime.mk\n'
 
 def compile_case(test_dir):
     build_process = Popen('make -j4 -C ' + test_dir, shell=True)
@@ -69,4 +69,4 @@ def run_legion_spy(test_location, test_name):
     if spy_process.returncode == 0:
         return success()
     else:
-        return TestRunInfo(False, 'legion spy error code ' + str(spy_process.returncode))
+        return legion_spy_failed('legion spy error code ' + str(spy_process.returncode))

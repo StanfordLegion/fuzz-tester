@@ -26,7 +26,7 @@ class TestRunInfo():
         return r
 
 class TestResult():
-    SUCCESS, BUILD_FAILED, RUN_FAILED, PARSE_FAILED, DEPENDENCE_ERRORS = range(5)
+    SUCCESS, BUILD_FAILED, RUN_FAILED, PARSE_FAILED, DEPENDENCE_ERRORS, LEGION_SPY_FAILED = range(6)
 
 def same_result(l, r):
     return l.result == r.result
@@ -42,6 +42,9 @@ def run_failed(msg):
 
 def parse_failed(msg):
     return TestRunInfo(TestResult.PARSE_FAILED, msg, 0, 0)
+
+def legion_spy_failed(msg):
+    return TestRunInfo(TestResult.LEGION_SPY_FAILED, msg, 0, 0)
 
 def dependence_errors(msg, dep_errs, close_errs):
     return TestRunInfo(TestResult.DEPENDENCE_ERRORS, msg, dep_errs, close_errs)

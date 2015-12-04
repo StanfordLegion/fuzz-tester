@@ -6,17 +6,18 @@ from test_suite import *
 
 test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 
+# failing test: ~/PythonWorkspace/test_gen/suites/reduction_test_2015_12_04_11_08_37/test_0_299/
 def main():
     settings = TestGeneratorSettings()
-    settings.seed = 134226
+    settings.seed = 134230
     settings.num_cases = 1
     settings.max_region_requirements_per_task = 10
     settings.max_new_trees_per_task = 3
     settings.max_task_children = 100
     settings.max_depth = 3
     settings.max_task_tree_depth = 1
-    settings.privileges = ['READ_WRITE', 'READ_ONLY']
-    settings.coherences = ['EXCLUSIVE', 'ATOMIC', 'SIMULTANEOUS'] #, 'ATOMIC', '
+    settings.privileges = ['READ_WRITE']#, 'READ_ONLY']
+    settings.coherences = ['EXCLUSIVE'] #, 'ATOMIC', 'SIMULTANEOUS'] #, 'ATOMIC', '
 #    run_timestamped_test_suite(settings)
     run_and_reduce_timestamped_test_suite(settings)
 
@@ -27,15 +28,12 @@ def run_and_reduce_timestamped_test_suite(settings):
     reduce_failing_case(cases, results)
 
 def reduce_failing_case(cases, results):
-    fail_func = lambda r: r.num_non_close_dep_errors() > 0
-    failed_tests = filter(lambda c: fail_func(results[c.name]), cases) # filter(lambda c: test_failed(results[c.name]), cases)
+    failed_tests = filter(lambda c: test_failed(results[c.name]), cases)
     if len(failed_tests) == 0:
         process_and_print_results(results)
     else:
+        fail_func = lambda r: r.result_str == results[failed_tests[0].name].result_str
         new_case = reduce_failed_test(test_dir, failed_tests[0], fail_func)
-
-        #results[failed_tests[0].name])
-        
     
 def run_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
