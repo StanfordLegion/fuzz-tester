@@ -8,8 +8,8 @@ test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
 
 def main():
     settings = TestGeneratorSettings()
-    settings.seed = 134225
-    settings.num_cases = 10
+    settings.seed = 134226
+    settings.num_cases = 1
     settings.max_region_requirements_per_task = 10
     settings.max_new_trees_per_task = 3
     settings.max_task_children = 100
@@ -23,16 +23,18 @@ def main():
 def run_and_reduce_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     cases = generate_random_cases(settings)
-    # !!!!!!!!!! NOTE: Artificial add in to reduce specific case
     results = run_test_suite(test_dir, suite_dir, cases)
-    new_case = reduce_failed_test(test_dir, cases[4], results[cases[4].name])
-    # failed_tests = filter(lambda c: test_failed(results[c.name]), cases)#lambda c: test_failed_no_close(results[c.name]), cases)
-    # if len(failed_tests) == 0:
-    #     process_and_print_results(results)
-    # else:
-    #     # !!!!!!!!!! NOTE: Artificial add in to reduce specific case
+    reduce_failing_case(cases, results)
 
-    #     #new_case = reduce_failed_test(test_dir, failed_tests[0], results[failed_tests[0].name])
+def reduce_failing_case(cases, results):
+    fail_func = lambda r: r.num_non_close_dep_errors() > 0
+    failed_tests = filter(lambda c: fail_func(results[c.name]), cases) # filter(lambda c: test_failed(results[c.name]), cases)
+    if len(failed_tests) == 0:
+        process_and_print_results(results)
+    else:
+        new_case = reduce_failed_test(test_dir, failed_tests[0], fail_func)
+
+        #results[failed_tests[0].name])
         
     
 def run_timestamped_test_suite(settings):

@@ -14,16 +14,19 @@ def parse_spy_str(result_str):
     if len(dep_lines) == 0:
         return parse_failed('Could not find mapping dependence line')
     else:
-        err = parse_dep_error_line(dep_lines[0])
-        err.error_lines = parse_error_lines(lines_wo_leading_whitespace)
+        error_lines = parse_error_lines(lines_wo_leading_whitespace)
+        err = parse_dep_error_line(dep_lines, error_lines)
         return err
 
 def parse_error_lines(lines):
     return filter(lambda l: l.startswith('ERROR:'), lines)
 
-def parse_dep_error_line(dep_line):
-    dep_errors = int(search('(.+): ([0-9]+)', dep_line).group(2))
-    if dep_errors == 0:
+def parse_dep_error_line(dep_lines, error_lines):
+    dep_errors = map(lambda dep_line: int(search('(.+): ([0-9]+)', dep_line).group(2)), dep_lines)
+    num_dep_errors = sum(dep_errors)
+    close_lines = filter(lambda l: 'Close' in l, error_lines)
+    num_close_errs = len(close_lines)
+    if num_dep_errors == 0:
         return success()
     else:
-        return dependence_errors('dependence errors: ' + str(dep_errors))
+        return dependence_errors('dependence errors: ' + str(dep_errors), num_dep_errors, num_close_errs)
