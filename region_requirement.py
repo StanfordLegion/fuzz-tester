@@ -26,7 +26,7 @@ def delete_aliasing_requirements(regions, rrs):
     no_alias_rrs = []
     for i in xrange(len(rrs)):
         rr = rrs[i]
-        if not any_aliases_in_list(regions, rr, rrs[i:]):
+        if i == len(rrs) - 1 or not any_aliases_in_list(regions, rr, rrs[i+1:]):
             no_alias_rrs.append(rr)
     return no_alias_rrs
 

@@ -6,7 +6,7 @@ from task import *
 from test_case import *
 from test_suite import *
 
-max_reductions = 200
+max_reductions = 300
 
 # failing, but with warnings: ~/PythonWorkspace/test_gen/suites/reduction_test_2015_10_29_18_18_01/test_0_98/
 # failing, no warnings: ~/PythonWorkspace/test_gen/suites/reduction_test_2015_10_29_18_27_06/test_0_176/ NOTE: This looks like a dynamic test of disjointness issue, wasnt this already resolved?
