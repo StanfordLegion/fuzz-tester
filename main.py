@@ -5,7 +5,6 @@ from test_generator import *
 from test_suite import *
 
 import os
-
 test_dir = os.environ['TEST_DIR']
 
 # failing test: ~/PythonWorkspace/test_gen/suites/reduction_test_2015_12_04_11_08_37/test_0_299/

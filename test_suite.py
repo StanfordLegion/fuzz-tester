@@ -5,6 +5,7 @@ from legion_spy_parser import *
 from subprocess import *
 from test_result import *
 
+import os
 legion_spy_path = os.environ['LEGION_SPY_PATH']
 
 def run_test_suite(test_dir, suite_dir, cases):
