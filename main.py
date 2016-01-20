@@ -4,7 +4,9 @@ from reducer.linear import *
 from test_generator import *
 from test_suite import *
 
-test_dir = "/Users/dillon/PythonWorkspace/test_gen/suites"
+import os
+
+test_dir = os.environ['TEST_DIR']
 
 # failing test: ~/PythonWorkspace/test_gen/suites/reduction_test_2015_12_04_11_08_37/test_0_299/
 def main():
@@ -34,7 +36,7 @@ def reduce_failing_case(cases, results):
     else:
         fail_func = lambda r: r.result_str == results[failed_tests[0].name].result_str
         new_case = reduce_failed_test(test_dir, failed_tests[0], fail_func)
-    
+
 def run_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     cases = generate_random_cases(settings)
