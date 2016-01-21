@@ -19,8 +19,8 @@ def main():
     settings.max_task_tree_depth = 1
     settings.privileges = ['READ_WRITE']#, 'READ_ONLY']
     settings.coherences = ['EXCLUSIVE'] #, 'ATOMIC', 'SIMULTANEOUS'] #, 'ATOMIC', '
-#    run_timestamped_test_suite(settings)
-    run_and_reduce_timestamped_test_suite(settings)
+    run_timestamped_test_suite(settings)
+    # run_and_reduce_timestamped_test_suite(settings)
 
 def run_and_reduce_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
