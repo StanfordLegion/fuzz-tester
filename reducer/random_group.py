@@ -11,7 +11,7 @@ MAX_REDUCTIONS_PER_GROUP = 1
 
 def reduce_failed_test(test_dir, failing_case, original_fail_result):
     suite_dir = "reduction_test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    mkdir(join(test_dir, suite_dir))
+    makedirs((join(test_dir, suite_dir))
     fail_case_stack = [failing_case]
     consecutive_successes = 0
     num_reductions = 0

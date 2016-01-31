@@ -1,4 +1,4 @@
-from os import mkdir
+from os import makedirs
 from os.path import *
 
 from legion_spy_parser import *
@@ -10,7 +10,7 @@ legion_spy_path = os.environ['LEGION_SPY_PATH']
 
 def run_test_suite(test_dir, suite_dir, cases):
     test_results = {}
-    mkdir(join(test_dir, suite_dir))
+    makedirs(join(test_dir, suite_dir))
     for test_case in cases:
         test_location = join(test_dir, suite_dir, test_case.name)
         test_result = run_test(test_location, test_case)
@@ -31,7 +31,7 @@ def run_test(test_location, test_case):
     return parse_spy_output(test_location)
 
 def create_test_dir(test_location, test_case):
-    mkdir(test_location)
+    makedirs(test_location)
     src_file = open(join(test_location, test_case.name + '.cc'), 'w+')
     src_file.write(test_case.pretty_string())
     makefile = open(join(test_location, "Makefile"), 'w+')

@@ -11,7 +11,7 @@ def reduce_failed_test(test_dir, failing_case, original_fail_result):
     
 def create_reduction_dir(test_dir):
     suite_dir = "reduction_test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    mkdir(join(test_dir, suite_dir))    
+    makedirs((join(test_dir, suite_dir))    
 
 def reduce_task_tree(fail_case, original_fail_result):
     return fail_case
