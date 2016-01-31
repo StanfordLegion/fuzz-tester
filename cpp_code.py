@@ -39,19 +39,14 @@ def cpp_funcall(name, template_params, args):
     return str
 
 def cpp_block(cpp_stmts):
-    return "{ " + cpp_stmt_list(0, cpp_stmts) + "}"
-    
+    return "{\n" + cpp_stmt_list(2, cpp_stmts) + "\n" + indent(2) + "}"
+
 def cpp_stmt_list(n, cpp_stmts):
-    str = ""
-    for stmt in cpp_stmts:
-        str += indent(n) + stmt + ";\n"
-    return str
+    lines = [indent(n) + stmt + ";" for stmt in cpp_stmts]
+    return "\n".join(lines)
 
 def indent(n):
-    if n == 0:
-        return ""
-    else:
-        return "\t" + indent(n - 1)
+    return "" + n * "\t"
 
 def cpp_param_list(formal_params):
     if len(formal_params) == 0:
