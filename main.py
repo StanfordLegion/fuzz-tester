@@ -14,9 +14,9 @@ def main():
     settings.num_cases = 1
     settings.max_region_requirements_per_task = 10
     settings.max_new_trees_per_task = 3
-    settings.max_task_children = 100
+    settings.max_task_children = 10
     settings.max_depth = 3
-    settings.max_task_tree_depth = 1
+    settings.max_task_tree_depth = 2
     settings.privileges = ['READ_WRITE']#, 'READ_ONLY']
     settings.coherences = ['EXCLUSIVE'] #, 'ATOMIC', 'SIMULTANEOUS'] #, 'ATOMIC', '
     run_timestamped_test_suite(settings)
