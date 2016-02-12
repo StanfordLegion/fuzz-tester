@@ -7,20 +7,22 @@ from test_suite import *
 import os
 test_dir = os.environ.get('TEST_DIR', os.getcwd() + "/tests")
 
-# failing test: ~/PythonWorkspace/test_gen/suites/reduction_test_2015_12_04_11_08_37/test_0_299/
 def main():
     settings = TestGeneratorSettings()
     settings.seed = 134230
     settings.num_cases = 1
-    settings.max_region_requirements_per_task = 10
-    settings.max_new_trees_per_task = 3
-    settings.max_task_children = 10
-    settings.max_depth = 3
+    settings.max_region_requirements_per_task = 2
+    settings.max_new_trees_per_task = 2
+    settings.max_task_children = 2
+    settings.max_depth = 2
     settings.max_task_tree_depth = 2
     settings.privileges = ['READ_WRITE']#, 'READ_ONLY']
     settings.coherences = ['EXCLUSIVE'] #, 'ATOMIC', 'SIMULTANEOUS'] #, 'ATOMIC', '
     run_timestamped_test_suite(settings)
     # run_and_reduce_timestamped_test_suite(settings)
+    # run_case("/Users/ludwig/Code/fuzz-tester/tests/test_2016_02_04_20_55_07/test_0", "test_0")
+    # run_legion_spy("/Users/ludwig/Code/fuzz-tester/tests/test_2016_02_04_20_55_07/test_0", "test_0")
+    # run_test_suite("/Users/ludwig/Code/fuzz-tester/tests", "test_2016_02_04_20_55_07/test_0", ["test_0"])
 
 def run_and_reduce_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")

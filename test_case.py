@@ -10,6 +10,7 @@ class TestCase():
     def __init__(self, name, top_level_task):
         self.name = name
         self.top_level_task = top_level_task
+        self.top_level_task.is_top_level = True
 
     def pretty_field_id_enums(self):
         all_field_spaces = filter(lambda fs: fs.is_needed, self.top_level_task.collect_field_spaces())
@@ -39,14 +40,39 @@ class TestCase():
                            [cpp_var(self.top_level_task.id())])
 
     def register_tasks(self):
-        taskCode = [self.top_level_task.registration_code()]
-        return map(lambda t: t.registration_code(), self.top_level_task.collect_tasks())
+        code = []
+        code += self.top_level_task.registration_code()
+        for task in self.top_level_task.collect_tasks():
+            code += task.registration_code()
+        return code
 
     def pretty_string(self):
         boilerplate = [cpp_include("legion.h"),
                        cpp_using("LegionRuntime::HighLevel"),
                        cpp_using("LegionRuntime::Accessor"),
+                       self.boilerplate_scope_struct(),
                        self.pretty_task_id_enum()] + self.pretty_field_id_enums()
         return cpp_top_level_items(boilerplate +
-                                   self.pretty_task_functions() + 
+                                   self.pretty_task_functions() +
                                    [self.pretty_main()])
+    def boilerplate_scope_struct(self):
+        return \
+'''
+//==========================================================================
+//                    LogicalRegionsAndPartitions
+//==========================================================================
+
+#include <string>
+#include <map>
+using namespace std;
+
+struct LogicalRegionsAndPartitions {
+public:
+    map<string, LogicalRegion>    logical_regions;
+    map<string, LogicalPartition> logical_partitions;
+};
+
+//==========================================================================
+//                  Preserving your scope since 2016
+//==========================================================================
+'''

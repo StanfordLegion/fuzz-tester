@@ -10,7 +10,7 @@ from index_partition import *
 from index_subspace import *
 from logical_partition import *
 from logical_region import *
-from logical_subspace import *
+from logical_subregion import *
 from name_source import next_name
 from region_requirement import *
 from test_case import *

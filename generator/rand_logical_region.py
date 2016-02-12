@@ -4,7 +4,7 @@ from generator.rand_field_space import random_field_space
 from generator.rand_index_tree import random_index_tree
 from logical_partition import *
 from logical_region import *
-from logical_subspace import *
+from logical_subregion import *
 from name_source import next_name
 
 def random_logical_region_trees(task_name, settings):
@@ -31,12 +31,12 @@ def make_logical_partition(task_name, field_space, partition):
     name = next_name('logical_partition')
     logical_subspaces = {}
     for i in partition.subspaces:
-        logical_subspaces[i] = make_logical_subspace(task_name, field_space, partition.subspaces[i])
+        logical_subspaces[i] = make_logical_subregion(task_name, field_space, partition.subspaces[i])
     return LogicalPartition(name, task_name, partition, logical_subspaces)
 
-def make_logical_subspace(task_name, field_space, index_subspace):
+def make_logical_subregion(task_name, field_space, index_subspace):
     name = next_name('logical_subregion')
     partitions = []
     for p in index_subspace.partitions:
         partitions.append(make_logical_partition(task_name, field_space, p))
-    return LogicalSubspace(name, task_name, field_space, index_subspace, partitions)
+    return LogicalSubregion(name, task_name, field_space, index_subspace, partitions)

@@ -1,5 +1,6 @@
 from random import *
 
+from name_source import *
 from region_requirement import *
 from generator.utils import should_stop
 
@@ -25,7 +26,8 @@ def random_region_requirement(regions, settings):
     fields = random_fields(region, settings)
     privilege = settings.privileges[randint(0, len(settings.privileges) - 1)]
     coherence = settings.coherences[randint(0, len(settings.coherences) - 1)]
-    return RegionRequirement(region, parent, fields, privilege, coherence)
+    name = next_name('region_requirement')
+    return RegionRequirement(name, region, parent, fields, privilege, coherence)
 
 def pick_random_region_and_parent(regions, settings):
     region_ind = randint(0, len(regions) - 1)

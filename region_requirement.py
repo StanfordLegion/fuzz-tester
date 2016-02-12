@@ -1,7 +1,8 @@
 from cpp_code import *
 
 class RegionRequirement():
-    def __init__(self, region, parent_region, fields, privilege, coherence):
+    def __init__(self, name, region, parent_region, fields, privilege, coherence):
+        self.name = name
         self.region = region
         self.parent_region = parent_region
         self.fields = fields
@@ -10,17 +11,20 @@ class RegionRequirement():
 
     def add_fields(self, requirement_num, launcher_name):
         field_add_stmts = []
-        for f in self.fields:
+        for f in sorted(self.fields):
             field_add_stmts.append(launcher_name + '.region_requirements[' + str(requirement_num) + '].add_field(' + f + ')')
         return field_add_stmts
 
     def should_print(self):
         self.region.should_print()
 
-    def init_code(self, requirement_num, launcher_name):
+    # When a child task wants to use a parent task's region,
+    # it gets the logical region from the runtime first
+    def init_code(self, requirement_num, launcher_name, retrieve_region=False):
+        statements = []
         rr = cpp_funcall('RegionRequirement', [], [self.region.name, self.privilege, self.coherence, self.parent_region.name])
         add_rr = cpp_funcall(launcher_name + '.add_region_requirement', [], [rr])
-        return [add_rr] + self.add_fields(requirement_num, launcher_name)
+        return statements + [add_rr] + self.add_fields(requirement_num, launcher_name)
 
 def delete_aliasing_requirements(regions, rrs):
     no_alias_rrs = []

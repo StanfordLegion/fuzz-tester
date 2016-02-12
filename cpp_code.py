@@ -25,7 +25,7 @@ def cpp_formal_param(param_type, param_name):
 
 def cpp_function(return_type, name, template_params, args, body):
     str = return_type + " " + name + "(" + cpp_param_list(args) + ")"
-    str += "{\n" + cpp_stmt_list(1, body) + "}"
+    str += "{\n" + cpp_stmt_list(1, body) + "\n}"
     return str
 
 def cpp_assign(lhs, rhs):
@@ -76,3 +76,11 @@ def cpp_int():
 
 def cpp_char():
     return "char"
+
+def cpp_empty_line():
+    return "\n\n"
+
+# specialized convenience methods:
+
+def cpp_value_pair(value_type, value_name):
+    return "map<string, " + value_type + ">::value_type(\"" + value_name + "\", " + value_name + ")"
