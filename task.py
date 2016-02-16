@@ -45,23 +45,40 @@ class Task():
 
     def logical_regions_init(self):
         code = []
+        code += self.declare_scope()
         code += [cpp_comment("Initialise IndexSpaces")]
         code += self.index_spaces_init()
         code += [cpp_comment("Initialise FieldSpaces")]
         code += self.field_spaces_init()
         code += [cpp_comment("Create LogicalRegions")]
         code += self.logical_regions_created_init()
-        code += [cpp_comment("Retrieve parents logical regions")]
-        code += self.retrieve_logical_regions()
+        if not self.is_top_level:
+            code += self.retrieve_logical_regions()
         return code
 
-    def retrieve_logical_regions(self):
+    def declare_scope(self):
         code = []
-        for rr in self.region_requirements:
-            if rr not in self.logical_regions_created:
-                code += rr.region.retrieve_code()
-        for rr in self.parent_region_requirements:
-            code += rr.region.retrieve_code()
+        code += ["LogicalRegionsAndPartitions scope = LogicalRegionsAndPartitions()"]
+        code += ["string serialized_scope"]
+        if len(self.all_logical_regions()) > 0 and not self.is_top_level:
+            code += ["scope = deserialize_from(task->args)"]
+        return code
+
+    def parent_logical_regions(self):
+        regions  = set(rr.region for rr in self.region_requirements)
+        return regions.difference(self.logical_regions_created)
+
+    def all_logical_regions(self):
+        regions  = set(rr.region for rr in self.region_requirements)
+        return regions.union(self.logical_regions_created)
+
+    def retrieve_logical_regions(self):
+        regions = self.parent_logical_regions()
+        code = []
+        if len(regions) > 0:
+            code += [cpp_comment("Retrieve parents logical regions")]
+        for r in regions:
+            code += r.retrieve_code()
         return code
 
     def region_requirements_code(self, launcher_name):
@@ -69,9 +86,10 @@ class Task():
         i = 0
 
         # Parent Region Requirements
-        for rr in self.parent_region_requirements:
-            rr_code.extend( rr.init_code(i, launcher_name) )
-            i += 1
+        # Nope - we do not have requirements for the parents of these regions, so can't pass them along!
+        # for rr in self.parent_region_requirements:
+        #     rr_code.extend( rr.init_code(i, launcher_name) )
+        #     i += 1
 
         # Own Region Requirements
         for rr in self.region_requirements:
@@ -82,8 +100,10 @@ class Task():
     def launch_code(self):
         code = []
         code += [cpp_comment("Create TaskLauncher")]
+        code += ["serialized_scope = serialized_string(scope)"]
         launcher_name = self.name + '_launcher'
-        null_arg = cpp_var('TaskArgument(&scope, sizeof(scope))')
+        # better to leak memory then to risk serialized_scope being deallocated before the contents were copied
+        null_arg = cpp_var('TaskArgument( static_cast<void*>( new std::string(serialized_scope)), serialized_scope.length() )')
         launcher_init = cpp_funcall('TaskLauncher ' + launcher_name, [], [self.id(), null_arg])
         launch_call = cpp_funcall('runtime->execute_task', [], ['ctx', launcher_name])
         code += [launcher_init]
@@ -98,16 +118,8 @@ class Task():
             launches.extend(child_task.launch_code())
         return launches
 
-    def restore_scope(self):
-        code = []
-        if self.is_top_level:
-            code += ["static LogicalRegionsAndPartitions scope"]
-        else:
-            code += ["LogicalRegionsAndPartitions &scope = *( (LogicalRegionsAndPartitions*)task->args )"]
-        return code
-
     def task_function(self):
-        task_body = self.restore_scope() + self.logical_regions_init() + self.child_task_launches()
+        task_body = self.logical_regions_init() + self.child_task_launches()
         return cpp_function(cpp_void(), self.name, [], task_args, task_body)
 
     def registration_code(self):

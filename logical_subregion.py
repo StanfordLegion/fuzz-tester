@@ -57,13 +57,12 @@ class LogicalSubregion():
 
     def retrieve_code(self):
         code = []
-        if self.logical_region:
-            code += self.logical_region.retrieve_code()
+        # if self.logical_region:
+        #     code += self.logical_region.retrieve_code()
         region_decl_str = cpp_var('LogicalRegion ' + self.name)
         retrieval_call = cpp_funcall('scope.logical_regions.at', [], ['"' + self.name + '"'])
         assign_call = cpp_assign(region_decl_str, retrieval_call)
         code += [assign_call]
-
         return code
 
     def init_code(self):

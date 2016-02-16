@@ -11,11 +11,12 @@ def main():
     settings = TestGeneratorSettings()
     settings.seed = 134230
     settings.num_cases = 1
-    settings.max_region_requirements_per_task = 2
-    settings.max_new_trees_per_task = 2
-    settings.max_task_children = 2
-    settings.max_depth = 2
-    settings.max_task_tree_depth = 2
+    depth = 3
+    settings.max_region_requirements_per_task = depth
+    settings.max_new_trees_per_task = depth
+    settings.max_task_children = depth
+    settings.max_depth = depth
+    settings.max_task_tree_depth = depth
     settings.privileges = ['READ_WRITE']#, 'READ_ONLY']
     settings.coherences = ['EXCLUSIVE'] #, 'ATOMIC', 'SIMULTANEOUS'] #, 'ATOMIC', '
     run_timestamped_test_suite(settings)

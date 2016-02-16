@@ -57,20 +57,70 @@ class TestCase():
                                    [self.pretty_main()])
     def boilerplate_scope_struct(self):
         return \
-'''
+r'''
 //==========================================================================
 //                    LogicalRegionsAndPartitions
 //==========================================================================
 
 #include <string>
+#include <sstream>
 #include <map>
+
 using namespace std;
 
-struct LogicalRegionsAndPartitions {
+#include <boost/serialization/map.hpp>
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+
+class LogicalRegionsAndPartitions {
+
+    // Enable serializability
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(logical_regions);
+        ar & BOOST_SERIALIZATION_NVP(logical_partitions);
+    }
+
 public:
+
+    LogicalRegionsAndPartitions();
+
     map<string, LogicalRegion>    logical_regions;
     map<string, LogicalPartition> logical_partitions;
+
 };
+
+LogicalRegionsAndPartitions::LogicalRegionsAndPartitions() {
+  logical_regions = map<string, LogicalRegion>();
+  logical_partitions = map<string, LogicalPartition>();
+}
+
+string serialized_string(LogicalRegionsAndPartitions scope) {
+    stringstream os(ios_base::out | ios_base::in);
+    {
+        boost::archive::xml_oarchive oa(os);
+        oa << BOOST_SERIALIZATION_NVP(scope);
+    }
+    //cout << "serialized into: " << os.str() << "\n\n"; // works
+    return os.str();
+}
+
+LogicalRegionsAndPartitions deserialize_from(void *data) {
+    LogicalRegionsAndPartitions scope;
+    {
+        string *serialized_data = static_cast<string*>(data);
+        // cout << "transferred and casted: " << *serialized_data << "\n\n"; // works
+        stringstream is(*serialized_data, ios_base::out | ios_base::in);
+        //cout << "converted from stream: " << is.str() << "\n\n"; // works
+        boost::archive::xml_iarchive ia(is);
+        ia >> BOOST_SERIALIZATION_NVP(scope);
+    }
+    return scope;
+}
+
+
 
 //==========================================================================
 //                  Preserving your scope since 2016
