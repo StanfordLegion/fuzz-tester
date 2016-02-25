@@ -32,12 +32,17 @@ class TestCase():
 
     def main_body(self):
         task_registration = [self.set_top_level_task()] + self.register_tasks()
-        run_call = cpp_var("return HighLevelRuntime::start(argc, argv)")
-        return task_registration + [run_call]
+        mapper_registration = [self.set_default_mapper()]
+        run_call = [cpp_var("return HighLevelRuntime::start(argc, argv)")]
+        return task_registration + mapper_registration + run_call
 
     def set_top_level_task(self):
         return cpp_funcall("HighLevelRuntime::set_top_level_task_id", [],
                            [cpp_var(self.top_level_task.id())])
+
+    def set_default_mapper(self):
+        return cpp_funcall("HighLevelRuntime::set_registration_callback", [],
+                           [cpp_var("register_random_mappers")])
 
     def register_tasks(self):
         code = []
@@ -48,6 +53,7 @@ class TestCase():
 
     def pretty_string(self):
         boilerplate = [cpp_include("legion.h"),
+                       cpp_include("random_mapper.h"),
                        cpp_using("LegionRuntime::HighLevel"),
                        cpp_using("LegionRuntime::Accessor"),
                        self.boilerplate_scope_struct(),
@@ -103,7 +109,6 @@ string serialized_string(LogicalRegionsAndPartitions scope) {
         boost::archive::xml_oarchive oa(os);
         oa << BOOST_SERIALIZATION_NVP(scope);
     }
-    //cout << "serialized into: " << os.str() << "\n\n"; // works
     return os.str();
 }
 
@@ -111,9 +116,7 @@ LogicalRegionsAndPartitions deserialize_from(void *data) {
     LogicalRegionsAndPartitions scope;
     {
         string *serialized_data = static_cast<string*>(data);
-        // cout << "transferred and casted: " << *serialized_data << "\n\n"; // works
         stringstream is(*serialized_data, ios_base::out | ios_base::in);
-        //cout << "converted from stream: " << is.str() << "\n\n"; // works
         boost::archive::xml_iarchive ia(is);
         ia >> BOOST_SERIALIZATION_NVP(scope);
     }
