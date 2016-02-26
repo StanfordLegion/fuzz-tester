@@ -47,22 +47,27 @@ class LogicalRegion():
                 child_is_needed = True
         return child_is_needed
 
+    def collect_subregions(self):
+        sub_regions = []
+        for partition in self.partitions:
+            sub_regions += partition.collect_subregions()
+        return sub_regions
+
     def pretty_code(self):
         region_decl_str = cpp_var('LogicalRegion ' + self.name)
         args = [cpp_var('ctx'), cpp_var(self.index_space.name), cpp_var(self.field_space.name)]
         creation_call = cpp_funcall('runtime->create_logical_region', [], args)
         naming_call = cpp_funcall('runtime->attach_name', [], [self.name, '"' + self.name + '"'])
-        registration_value_pair = cpp_value_pair('LogicalRegion', self.name)
-        registration_call = cpp_funcall('scope.logical_regions.insert', [], [registration_value_pair])
+        registration_call = "scope." + self.name + " = " + self.name
         code = [cpp_assign(region_decl_str, creation_call), naming_call, registration_call]
         for p in self.partitions:
             code += p.init_code()
         return code
 
     def retrieve_code(self):
-        region_decl_str = cpp_var('LogicalRegion ' + self.name)
-        retrieval_call = cpp_funcall('scope.logical_regions.at', [], ['"' + self.name + '"'])
-        assign_call = cpp_assign(region_decl_str, retrieval_call)
+        region_declaration = cpp_var("LogicalRegion " + self.name)
+        retrieval_call = "scope." + self.name
+        assign_call = cpp_assign(region_declaration, retrieval_call)
         return [assign_call]
 
     def init_code(self, task_name=None):

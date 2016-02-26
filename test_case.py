@@ -1,5 +1,5 @@
 from itertools import chain
-
+from utils import *
 from cpp_code import *
 from task import Task
 
@@ -32,12 +32,17 @@ class TestCase():
 
     def main_body(self):
         task_registration = [self.set_top_level_task()] + self.register_tasks()
-        run_call = cpp_var("return HighLevelRuntime::start(argc, argv)")
-        return task_registration + [run_call]
+        mapper_registration = [self.set_default_mapper()]
+        run_call = [cpp_var("return HighLevelRuntime::start(argc, argv)")]
+        return task_registration + mapper_registration + run_call
 
     def set_top_level_task(self):
         return cpp_funcall("HighLevelRuntime::set_top_level_task_id", [],
                            [cpp_var(self.top_level_task.id())])
+
+    def set_default_mapper(self):
+        return cpp_funcall("HighLevelRuntime::set_registration_callback", [],
+                           [cpp_var("register_random_mappers")])
 
     def register_tasks(self):
         code = []
@@ -48,31 +53,25 @@ class TestCase():
 
     def pretty_string(self):
         boilerplate = [cpp_include("legion.h"),
+                       cpp_include("random_mapper.h"),
                        cpp_using("LegionRuntime::HighLevel"),
                        cpp_using("LegionRuntime::Accessor"),
-                       self.boilerplate_scope_struct(),
+                       self.scope_struct(),
                        self.pretty_task_id_enum()] + self.pretty_field_id_enums()
         return cpp_top_level_items(boilerplate +
                                    self.pretty_task_functions() +
                                    [self.pretty_main()])
-    def boilerplate_scope_struct(self):
-        return \
-'''
-//==========================================================================
-//                    LogicalRegionsAndPartitions
-//==========================================================================
 
-#include <string>
-#include <map>
-using namespace std;
+    def scope_struct(self):
+        all_regions = self.collect_all_regions()
+        # all_partitions = self.collect_all_partitions()
+        # partition_declarations = [ "LogicalPartition " + p.name for p in all_partitions]
+        region_declarations = [ "LogicalRegion " + r.name for r in all_regions]
+        # member_declarations = region_declarations + partition_declarations
+        return cpp_struct("LogicalRegionsAndPartitions", region_declarations)
 
-struct LogicalRegionsAndPartitions {
-public:
-    map<string, LogicalRegion>    logical_regions;
-    map<string, LogicalPartition> logical_partitions;
-};
-
-//==========================================================================
-//                  Preserving your scope since 2016
-//==========================================================================
-'''
+    def collect_all_regions(self):
+        all_tasks = self.top_level_task.collect_tasks()
+        regions = flatten([task.logical_regions_created for task in all_tasks])
+        sub_regions = flatten([region.collect_subregions() for region in regions])
+        return regions + sub_regions

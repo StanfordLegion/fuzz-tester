@@ -17,6 +17,7 @@ def random_tasks(regions, settings, depth, parent_rrs=[], parent_name=None):
 def random_task(regions, settings, depth, parent_rrs=[], parent_name=None):
     name = next_name( 'task' )
     region_requirements = random_region_requirements_no_alias(regions, settings)
+    region_requirements += random_region_requirements_from_rrs_no_alias(parent_rrs, settings)
     # if parent_rrs:
         # region_requirements += parent_rrs
     # num_region_requirements_to_pass_on = int(len(region_requirements) * 0.5)
@@ -24,8 +25,9 @@ def random_task(regions, settings, depth, parent_rrs=[], parent_name=None):
 
     # Create task
     t = Task(name, region_requirements, parent_rrs)
-    t.logical_regions_created = random_logical_region_trees(t.name, settings)
-    child_tasks = random_tasks(t.logical_regions_created,
+    created_regions = random_logical_region_trees(t.name, settings)
+    t.logical_regions_created = created_regions
+    child_tasks = random_tasks(created_regions,
                                settings, depth+1,
                                parent_rrs=region_requirements,
                                parent_name=name)

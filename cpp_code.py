@@ -39,7 +39,7 @@ def cpp_funcall(name, template_params, args):
     return str
 
 def cpp_block(cpp_stmts):
-    return "{\n" + cpp_stmt_list(2, cpp_stmts) + "\n" + indent(2) + "}"
+    return "{\n" + cpp_stmt_list(2, cpp_stmts) + "\n" + indent(1) + "}"
 
 def cpp_stmt_list(n, cpp_stmts):
     lines = [indent(n) + stmt + ";" for stmt in cpp_stmts]
@@ -79,6 +79,9 @@ def cpp_char():
 
 def cpp_empty_line():
     return "\n\n"
+
+def cpp_struct(name, statements):
+    return "struct " + name + " {\n" + cpp_stmt_list(1, statements) + "\n" + "};"
 
 # specialized convenience methods:
 

@@ -21,6 +21,12 @@ class LogicalSubregion():
                     return True
         return False
 
+    def collect_subregions(self):
+        sub_regions = []
+        for partition in self.partitions:
+            sub_regions += partition.collect_subregions()
+        return sub_regions
+
     def shouldnt_print_anything(self):
         self.shouldnt_print()
         map(lambda p: p.shouldnt_print_anything(), self.partitions)
@@ -48,8 +54,7 @@ class LogicalSubregion():
     def pretty_code(self,):
         init_call = 'LogicalRegion ' + self.name + ' = runtime->get_logical_subregion_by_color(ctx, ' + self.logical_partition.name + ', ' + str(self.color) + ')'
         naming_call = cpp_funcall('runtime->attach_name', [], [self.name, '"' + self.name + '"'])
-        registration_value_pair = cpp_value_pair('LogicalRegion', self.name)
-        registration_call = cpp_funcall('scope.logical_regions.insert', [], [registration_value_pair])
+        registration_call = "scope." + self.name + " = " + self.name
         code = [init_call, naming_call, registration_call]
         for p in self.partitions:
             code.extend(p.init_code())
@@ -57,13 +62,10 @@ class LogicalSubregion():
 
     def retrieve_code(self):
         code = []
-        if self.logical_region:
-            code += self.logical_region.retrieve_code()
-        region_decl_str = cpp_var('LogicalRegion ' + self.name)
-        retrieval_call = cpp_funcall('scope.logical_regions.at', [], ['"' + self.name + '"'])
-        assign_call = cpp_assign(region_decl_str, retrieval_call)
+        region_declaration = cpp_var("LogicalRegion " + self.name)
+        retrieval_call = "scope." + self.name
+        assign_call = cpp_assign(region_declaration, retrieval_call)
         code += [assign_call]
-
         return code
 
     def init_code(self):
