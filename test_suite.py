@@ -58,7 +58,7 @@ def run_case(test_location, test_name, settings):
     spy_log_file = join(test_location, "spy.log")
     test_executable_path = join(test_location, test_name)
     legion_spy_flags = " -level 2 -cat legion_spy -logfile " + spy_log_file
-    run_command_string = runner + test_executable_path + legion_spy_flags
+    run_command_string = runner + ' ' + test_executable_path + legion_spy_flags
     run_process = Popen(run_command_string, shell=True)
     run_process.communicate()
     if run_process.returncode == 0:
