@@ -58,15 +58,18 @@ class Task():
 
     def declare_scope(self):
         code = []
-        code += ["LogicalRegionsAndPartitions scope = LogicalRegionsAndPartitions()"]
-        code += ["string serialized_scope"]
-        if len(self.all_logical_regions()) > 0 and not self.is_top_level:
-            code += ["scope = deserialize_from(task->args)"]
+        if self.is_top_level:
+            code += ["LogicalRegionsAndPartitions scope"]
+        elif len(self.all_logical_regions()) > 0:
+            code += ["LogicalRegionsAndPartitions &scope = *( (LogicalRegionsAndPartitions*) task->args)"]
         return code
+
 
     def parent_logical_regions(self):
         regions  = set(rr.region for rr in self.region_requirements)
-        return regions.difference(self.logical_regions_created)
+        parent_regions = set(rr.region for rr in self.parent_region_requirements)
+        all_regions = regions.union(parent_regions)
+        return all_regions.difference(self.logical_regions_created)
 
     def all_logical_regions(self):
         regions  = set(rr.region for rr in self.region_requirements)
@@ -100,10 +103,10 @@ class Task():
     def launch_code(self):
         code = []
         code += [cpp_comment("Create TaskLauncher")]
-        code += ["serialized_scope = serialized_string(scope)"]
+        # code += ["serialized_scope = serialized_string(scope)"]
         launcher_name = self.name + '_launcher'
         # better to leak memory then to risk serialized_scope being deallocated before the contents were copied
-        null_arg = cpp_var('TaskArgument( static_cast<void*>( new std::string(serialized_scope)), serialized_scope.length() )')
+        null_arg = cpp_var('TaskArgument( &scope, sizeof(scope) )')
         launcher_init = cpp_funcall('TaskLauncher ' + launcher_name, [], [self.id(), null_arg])
         launch_call = cpp_funcall('runtime->execute_task', [], ['ctx', launcher_name])
         code += [launcher_init]

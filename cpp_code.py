@@ -80,6 +80,9 @@ def cpp_char():
 def cpp_empty_line():
     return "\n\n"
 
+def cpp_struct(name, statements):
+    return "struct " + name + " {\n" + cpp_stmt_list(1, statements) + "\n" + "};"
+
 # specialized convenience methods:
 
 def cpp_value_pair(value_type, value_name):

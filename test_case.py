@@ -1,5 +1,5 @@
 from itertools import chain
-
+from utils import *
 from cpp_code import *
 from task import Task
 
@@ -56,76 +56,22 @@ class TestCase():
                        cpp_include("random_mapper.h"),
                        cpp_using("LegionRuntime::HighLevel"),
                        cpp_using("LegionRuntime::Accessor"),
-                       self.boilerplate_scope_struct(),
+                       self.scope_struct(),
                        self.pretty_task_id_enum()] + self.pretty_field_id_enums()
         return cpp_top_level_items(boilerplate +
                                    self.pretty_task_functions() +
                                    [self.pretty_main()])
-    def boilerplate_scope_struct(self):
-        return \
-r'''
-//==========================================================================
-//                    LogicalRegionsAndPartitions
-//==========================================================================
 
-#include <string>
-#include <sstream>
-#include <map>
+    def scope_struct(self):
+        all_regions = self.collect_all_regions()
+        # all_partitions = self.collect_all_partitions()
+        # partition_declarations = [ "LogicalPartition " + p.name for p in all_partitions]
+        region_declarations = [ "LogicalRegion " + r.name for r in all_regions]
+        # member_declarations = region_declarations + partition_declarations
+        return cpp_struct("LogicalRegionsAndPartitions", region_declarations)
 
-using namespace std;
-
-#include <boost/serialization/map.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-
-class LogicalRegionsAndPartitions {
-
-    // Enable serializability
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
-    {
-        ar & BOOST_SERIALIZATION_NVP(logical_regions);
-        ar & BOOST_SERIALIZATION_NVP(logical_partitions);
-    }
-
-public:
-
-    LogicalRegionsAndPartitions();
-
-    map<string, LogicalRegion>    logical_regions;
-    map<string, LogicalPartition> logical_partitions;
-
-};
-
-LogicalRegionsAndPartitions::LogicalRegionsAndPartitions() {
-  logical_regions = map<string, LogicalRegion>();
-  logical_partitions = map<string, LogicalPartition>();
-}
-
-string serialized_string(LogicalRegionsAndPartitions scope) {
-    stringstream os(ios_base::out | ios_base::in);
-    {
-        boost::archive::xml_oarchive oa(os);
-        oa << BOOST_SERIALIZATION_NVP(scope);
-    }
-    return os.str();
-}
-
-LogicalRegionsAndPartitions deserialize_from(void *data) {
-    LogicalRegionsAndPartitions scope;
-    {
-        string *serialized_data = static_cast<string*>(data);
-        stringstream is(*serialized_data, ios_base::out | ios_base::in);
-        boost::archive::xml_iarchive ia(is);
-        ia >> BOOST_SERIALIZATION_NVP(scope);
-    }
-    return scope;
-}
-
-
-
-//==========================================================================
-//                  Preserving your scope since 2016
-//==========================================================================
-'''
+    def collect_all_regions(self):
+        all_tasks = self.top_level_task.collect_tasks()
+        regions = flatten([task.logical_regions_created for task in all_tasks])
+        sub_regions = flatten([region.collect_subregions() for region in regions])
+        return regions + sub_regions

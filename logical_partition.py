@@ -36,17 +36,23 @@ class LogicalPartition():
         self.is_needed = True
         self.index_partition.is_needed = True
 
+    def collect_subregions(self):
+        sub_regions = []
+        for color in self.subspaces:
+            sub_region = self.subspaces[color]
+            sub_regions += [sub_region]
+            sub_regions += sub_region.collect_subregions()
+        return sub_regions
+
     def pretty_code(self):
         init_call = 'runtime->get_logical_partition(ctx, ' + self.logical_region.name + ', ' + self.index_partition.name + ')'
         partition_init = cpp_assign('LogicalPartition ' + self.name, init_call)
         naming_call = cpp_funcall('runtime->attach_name', [], [self.name, '"' + self.name + '"'])
-        registration_value_pair = cpp_value_pair('LogicalPartition', self.name)
-        registration_call = cpp_funcall('scope.logical_partitions.insert', [], [registration_value_pair])
         subspace_init = []
         for color in self.subspaces:
             s = self.subspaces[color]
             subspace_init.extend(s.init_code())
-        return [partition_init, naming_call, registration_call] + subspace_init
+        return [partition_init, naming_call] + subspace_init
 
     def init_code(self):
         if self.is_needed:
