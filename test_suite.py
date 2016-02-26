@@ -9,7 +9,7 @@ from test_result import *
 import os
 
 legion_path = os.environ['LG_RT_DIR']
-legion_spy_path = os.environ.get('LEGION_SPY_PATH', join(legion_path, 'tools', 'legion_spy.py'))
+legion_spy_path = os.environ.get('LEGION_SPY_PATH', join(legion_path, '..', 'tools', 'legion_spy.py'))
 
 def run_test_suite(test_dir, suite_dir, cases, settings):
     test_results = {}
