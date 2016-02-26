@@ -19,6 +19,7 @@ def main():
     settings.max_task_tree_depth = depth
     settings.privileges = ['READ_WRITE']#, 'READ_ONLY']
     settings.coherences = ['EXCLUSIVE'] #, 'ATOMIC', 'SIMULTANEOUS'] #, 'ATOMIC', '
+    settings.runner = "mpirun --host n0001,n0002,n0003"
     run_timestamped_test_suite(settings)
     # run_and_reduce_timestamped_test_suite(settings)
     # run_case("/Users/ludwig/Code/fuzz-tester/tests/test_2016_02_04_20_55_07/test_0", "test_0")
@@ -28,7 +29,7 @@ def main():
 def run_and_reduce_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     cases = generate_random_cases(settings)
-    results = run_test_suite(test_dir, suite_dir, cases)
+    results = run_test_suite(test_dir, suite_dir, cases, settings)
     reduce_failing_case(cases, results)
 
 def reduce_failing_case(cases, results):
@@ -42,7 +43,7 @@ def reduce_failing_case(cases, results):
 def run_timestamped_test_suite(settings):
     suite_dir = "test_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     cases = generate_random_cases(settings)
-    results = run_test_suite(test_dir, suite_dir, cases)
+    results = run_test_suite(test_dir, suite_dir, cases, settings)
     process_and_print_results(results)
 
 def process_and_print_results(results):
