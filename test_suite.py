@@ -43,7 +43,7 @@ def create_test_dir(test_location, test_case):
     copyfile(join("template", "random_mapper.cc"), join(test_location, "random_mapper.cc"))
 
 def makefile_string(file_name):
-    return 'ifndef LG_RT_DIR\n$(error LG_RT_DIR variable is not defined, aborting build)\nendif\nDEBUG=1\nOUTPUT_LEVEL=LEVEL_DEBUG\nSHARED_LOWLEVEL=0\nUSE_CUDA=0\nUSE_GASNET=0\nCC_FLAGS=-DLEGION_SPY\nOUTFILE\t:= ' + file_name + '\nGEN_SRC\t:= ' + file_name + '.cc random_mapper.cc' + '\ninclude $(LG_RT_DIR)/runtime.mk\n'
+    return 'ifndef LG_RT_DIR\n$(error LG_RT_DIR variable is not defined, aborting build)\nendif\nDEBUG=1\nOUTPUT_LEVEL=LEVEL_DEBUG\nSHARED_LOWLEVEL=0\nUSE_CUDA=0\nUSE_GASNET=1\nCC_FLAGS=-DLEGION_SPY\nOUTFILE\t:= ' + file_name + '\nGEN_SRC\t:= ' + file_name + '.cc random_mapper.cc' + '\ninclude $(LG_RT_DIR)/runtime.mk\n'
 
 def compile_case(test_dir):
     build_process = Popen('make -j4 -C ' + test_dir, shell=True)
