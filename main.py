@@ -23,7 +23,7 @@ def main():
     settings.privileges = ['READ_WRITE']#, 'READ_ONLY']
     settings.coherences = ['EXCLUSIVE'] #, 'ATOMIC', 'SIMULTANEOUS'] #, 'ATOMIC', '
     settings.runner = "mpirun --host n0001,n0002,n0003,n0000 -np 4 --bind-to none"
-    settings.legion_spy_flags = "-level 2 -cat legion_spy -logfile spy_%.log"
+    settings.legion_spy_flags = "-level 2 -cat legion_spy"
     run_timestamped_test_suite(settings)
     # run_and_reduce_timestamped_test_suite(settings)
     # run_case("/Users/ludwig/Code/fuzz-tester/tests/test_2016_02_04_20_55_07/test_0", "test_0")
