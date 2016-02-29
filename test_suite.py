@@ -55,9 +55,7 @@ def compile_case(test_dir):
 
 def run_case(test_location, test_name, settings):
     runner = settings.runner
-    spy_log_file = join(test_location, "spy.log")
     test_executable_path = join(test_location, test_name)
-    legion_spy_flags = " -level 2 -cat legion_spy -logfile " + spy_log_file
     run_command_string = runner + ' ' + test_executable_path + legion_spy_flags
     run_process = Popen(run_command_string, shell=True)
     run_process.communicate()
@@ -67,7 +65,7 @@ def run_case(test_location, test_name, settings):
         return run_failed('run error code ' + str(run_process.returncode))
 
 def run_legion_spy(test_location, test_name):
-    spy_log_file = join(test_location, 'spy.log')
+    spy_log_file = join(test_location, 'spy_*.log')
     spy_output_file = join(test_location, 'spy_results.txt')
     spy_options = ' -l '
     run_legion_spy_command_string = legion_spy_path + spy_options + spy_log_file + ' > ' + spy_output_file
