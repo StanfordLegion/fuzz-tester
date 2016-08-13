@@ -3,7 +3,7 @@ from itertools import chain
 from cpp_code import *
 
 class Task():
-    def __init__(self, name, region_requirements, parent_region_requirements=[], is_index_task=True):
+    def __init__(self, name, region_requirements, parent_region_requirements=[], is_index_task=False):
         self.name = name
         self.logical_regions_created = []
         self.region_requirements = set(region_requirements)
