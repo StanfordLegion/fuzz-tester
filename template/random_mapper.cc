@@ -1,13 +1,14 @@
 #include "random_mapper.h"
-#include "default_mapper.h"
+#include "shim_mapper.h"
 
 #include <cstdlib>
 #include <map>
 
-class RandomMapper : public DefaultMapper
+class RandomMapper : public ShimMapper
 {
   public:
-    RandomMapper(Machine, HighLevelRuntime*, Processor);
+    RandomMapper(Machine, Runtime *, MapperRuntime *,
+                 Processor, const char *name = NULL);
     virtual void select_task_options(Task*);
   private:
     std::map<Processor, Memory> all_sysmems;
@@ -15,9 +16,9 @@ class RandomMapper : public DefaultMapper
     AddressSpaceID num_nodes;
 };
 
-RandomMapper::RandomMapper(Machine machine, HighLevelRuntime* rt,
-                           Processor local_proc)
-  : DefaultMapper(machine, rt, local_proc),
+RandomMapper::RandomMapper(Machine machine, Runtime *rt, MapperRuntime *mrt,
+                           Processor local_proc, const char *name /* = NULL */)
+  : ShimMapper(machine, rt, mrt, local_proc, name),
     num_nodes(0)
 {
   const std::set<Processor> &cpu_procs =
@@ -47,10 +48,16 @@ void RandomMapper::select_task_options(Task* task)
   while (num_nodes > 1 && my_node_id == next_node_id)
     next_node_id = (my_node_id + rand()) % num_nodes;
 
+  Machine::ProcessorQuery procs = Machine::ProcessorQuery(machine).only_kind(Processor::LOC_PROC);
+  std::vector<Processor> all_procs(procs.begin(), procs.end());
+
   task->target_proc =
-    DefaultMapper::select_random_processor(proc_map[next_node_id],
-                                           Processor::LOC_PROC,
-                                           machine);
+    DefaultMapper::default_select_random_processor(
+                                                   all_procs
+                                                   // proc_map[next_node_id],
+                                                   // Processor::LOC_PROC,
+                                                   // machine
+                                                   );
 }
 
 void register_random_mappers(Machine machine, HighLevelRuntime* rt,
@@ -60,6 +67,6 @@ void register_random_mappers(Machine machine, HighLevelRuntime* rt,
   for (std::set<Processor>::const_iterator it = local_procs.begin();
         it != local_procs.end(); it++)
   {
-    rt->replace_default_mapper(new RandomMapper(machine, rt, *it), *it);
+    rt->replace_default_mapper(new RandomMapper(machine, rt, rt->get_mapper_runtime(), *it, "RandomMapper"), *it);
   }
 }

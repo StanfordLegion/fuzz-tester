@@ -3,7 +3,8 @@
 
 #include "legion.h"
 
-using namespace LegionRuntime::HighLevel;
+using namespace Legion;
+using namespace Legion::Mapping;
 
 void register_random_mappers(Machine, HighLevelRuntime*,
                              const std::set<Processor>&);
