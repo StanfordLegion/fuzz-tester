@@ -44,10 +44,24 @@ def create_test_dir(test_location, test_case):
     copyfile(join("template", "random_mapper.cc"), join(test_location, "random_mapper.cc"))
 
 def makefile_string(file_name):
-    return 'ifndef LG_RT_DIR\n$(error LG_RT_DIR variable is not defined, aborting build)\nendif\nDEBUG=1\nOUTPUT_LEVEL=LEVEL_DEBUG\nSHARED_LOWLEVEL=0\nUSE_CUDA=0\nUSE_GASNET=0\nCC_FLAGS=-DLEGION_SPY\nOUTFILE\t:= ' + file_name + '\nGEN_SRC\t:= ' + file_name + '.cc random_mapper.cc' + '\ninclude $(LG_RT_DIR)/runtime.mk\n'
+    return '''
+ifndef LG_RT_DIR
+  $(error LG_RT_DIR variable is not defined, aborting build)
+endif
+DEBUG ?= 1
+OUTPUT_LEVEL ?= LEVEL_DEBUG
+SHARED_LOWLEVEL ?= 0
+USE_CUDA ?= 0
+USE_GASNET ?= 0
+CC_FLAGS ?= -DLEGION_SPY
+OUTFILE := %s
+GEN_SRC := %s.cc random_mapper.cc
+include $(LG_RT_DIR)/runtime.mk
+''' % (file_name, file_name)
 
 def compile_case(test_dir):
-    build_process = Popen(['make', '-j4', '-C', test_dir])
+    threads = os.environ.get('THREADS', '4')
+    build_process = Popen(['make', '-j', threads, '-C', test_dir])
     build_process.communicate()
     if build_process.returncode == 0:
         return success()
