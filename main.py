@@ -22,8 +22,8 @@ def main():
     # index space launches
     settings.privileges = ['READ_WRITE']#, 'READ_ONLY']
     settings.coherences = ['EXCLUSIVE'] #, 'ATOMIC', 'SIMULTANEOUS'] #, 'ATOMIC', '
-    settings.runner = ""#"mpirun --host n0001,n0002,n0003,n0000 -np 4 --bind-to none -x GASNET_BACKTRACE=1"
-    settings.legion_spy_flags = "-level legion_spy=2"
+    settings.runner = [] #"mpirun --host n0001,n0002,n0003,n0000 -np 4 --bind-to none -x GASNET_BACKTRACE=1"
+    settings.legion_spy_flags = ["-level", "legion_spy=2"]
     run_timestamped_test_suite(settings)
     # run_and_reduce_timestamped_test_suite(settings)
     # run_case("/Users/ludwig/Code/fuzz-tester/tests/test_2016_02_04_20_55_07/test_0", "test_0")

@@ -47,7 +47,7 @@ def makefile_string(file_name):
     return 'ifndef LG_RT_DIR\n$(error LG_RT_DIR variable is not defined, aborting build)\nendif\nDEBUG=1\nOUTPUT_LEVEL=LEVEL_DEBUG\nSHARED_LOWLEVEL=0\nUSE_CUDA=0\nUSE_GASNET=0\nCC_FLAGS=-DLEGION_SPY\nOUTFILE\t:= ' + file_name + '\nGEN_SRC\t:= ' + file_name + '.cc random_mapper.cc' + '\ninclude $(LG_RT_DIR)/runtime.mk\n'
 
 def compile_case(test_dir):
-    build_process = Popen('make -j4 -C ' + test_dir, shell=True)
+    build_process = Popen(['make', '-j4', '-C', test_dir])
     build_process.communicate()
     if build_process.returncode == 0:
         return success()
@@ -58,8 +58,8 @@ def run_case(test_location, test_name, settings):
     runner = settings.runner
     test_executable_path = join(test_location, test_name)
     log_files_template = join(test_location, "spy.log")
-    run_command_string = runner + ' ' + test_executable_path + ' ' + settings.legion_spy_flags + " -logfile " + log_files_template
-    run_process = Popen(run_command_string, shell=True)
+    command = runner + [test_executable_path] + settings.legion_spy_flags + ['-logfile', log_files_template]
+    run_process = Popen(command)
     run_process.communicate()
     if run_process.returncode == 0:
         return success()
