@@ -141,7 +141,7 @@ class Task():
         return launches
 
     def report_run(self):
-        string = self.id() + " has completed!"
+        string = self.id() + r" has completed!\n"
         return [cpp_funcall("printf", [], ['"' + string + '"'])]
 
     def task_function(self):
