@@ -42,7 +42,10 @@ def cpp_block(cpp_stmts):
     return "{\n" + cpp_stmt_list(2, cpp_stmts) + "\n" + indent(1) + "}"
 
 def cpp_stmt_list(n, cpp_stmts):
-    lines = [indent(n) + stmt + ";" for stmt in cpp_stmts]
+    try:
+        lines = [indent(n) + stmt + ";" for stmt in cpp_stmts]
+    except:
+        assert False, "could not concatenate: '" + str(stmt)
     return "\n".join(lines)
 
 def indent(n):

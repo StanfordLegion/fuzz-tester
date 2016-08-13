@@ -39,7 +39,7 @@ void RandomMapper::select_task_options(Task* task)
 {
   task->inline_task = false;
   task->spawn_task = false;
-  task->map_locally = false;
+  task->map_locally = true;
   task->profile_task = false;
 
   AddressSpaceID my_node_id = task->target_proc.address_space();

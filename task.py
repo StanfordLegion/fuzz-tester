@@ -3,13 +3,14 @@ from itertools import chain
 from cpp_code import *
 
 class Task():
-    def __init__(self, name, region_requirements, parent_region_requirements=[]):
+    def __init__(self, name, region_requirements, parent_region_requirements=[], is_index_task=True):
         self.name = name
         self.logical_regions_created = []
         self.region_requirements = set(region_requirements)
         self.parent_region_requirements = set(parent_region_requirements)
         self.child_tasks = []
         self.is_top_level = False
+        self.is_index_task = is_index_task
 
     def all_field_spaces(self):
         return map(lambda rr: rr.region.field_space, self.region_requirements)
@@ -104,15 +105,33 @@ class Task():
         code = []
         code += [cpp_comment("Create TaskLauncher")]
         # code += ["serialized_scope = serialized_string(scope)"]
-        launcher_name = self.name + '_launcher'
-        # better to leak memory then to risk serialized_scope being deallocated before the contents were copied
-        null_arg = cpp_var('TaskArgument( &scope, sizeof(scope) )')
-        launcher_init = cpp_funcall('TaskLauncher ' + launcher_name, [], [self.id(), null_arg])
-        launch_call = cpp_funcall('runtime->execute_task', [], ['ctx', launcher_name])
+        launcher_name = self.name + '_index_launcher'
+        argument = cpp_var('TaskArgument( &scope, sizeof(scope) )')
+        if self.is_index_task:
+            code += [cpp_comment("Create LaunchDomain")]
+            arg_map_name = self.id() + "_argument_map"
+            code += [cpp_var('ArgumentMap ' + arg_map_name)]
+            launch_bounds_name = self.id() + "_launch_bounds"
+            launch_bounds_decl = cpp_var('Rect<1> ' + launch_bounds_name)
+            launch_bounds_creation = cpp_funcall("Rect", ["1"], ["Point<1>(0)", "Point<1>(5)"])
+            code += [cpp_assign(launch_bounds_decl, launch_bounds_creation)]
+            launch_domain_name = self.id() + "_launch_domain"
+            launch_domain_decl = cpp_var('Domain ' + launch_domain_name)
+            launch_domain_creation = cpp_funcall("Domain::from_rect", ["1"], [launch_bounds_name])
+            code += [cpp_assign(launch_domain_decl, launch_domain_creation)]
+            launcher_init = cpp_funcall('IndexLauncher ' + launcher_name, [], [self.id(), launch_domain_name, argument, arg_map_name])
+            execute_index_space = cpp_funcall('runtime->execute_index_space', [], ['ctx', launcher_name])
+            future_map_name = self.id() + "future_map"
+            future_map_decl = cpp_var('FutureMap ' + future_map_name)
+            launch_call = [cpp_assign(future_map_decl, execute_index_space)]
+            launch_call += [cpp_funcall(future_map_name + ".wait_all_results", [], [])]
+        else:
+            launcher_init = cpp_funcall('TaskLauncher ' + launcher_name, [], [self.id(), argument])
+            launch_call = [cpp_funcall('runtime->execute_task', [], ['ctx', launcher_name])]
         code += [launcher_init]
         code += [cpp_funcall('runtime->attach_name', [], [cpp_var(self.id()), '"' + self.name + '"'])]
         code += self.region_requirements_code(launcher_name)
-        code += [launch_call]
+        code += launch_call
         return code
 
     def child_task_launches(self):
@@ -121,16 +140,22 @@ class Task():
             launches.extend(child_task.launch_code())
         return launches
 
+    def report_run(self):
+        string = self.id() + " has completed!"
+        return [cpp_funcall("printf", [], ['"' + string + '"'])]
+
     def task_function(self):
-        task_body = self.logical_regions_init() + self.child_task_launches()
+        task_body = self.logical_regions_init() + self.child_task_launches() + self.report_run()
         return cpp_function(cpp_void(), self.name, [], task_args, task_body)
 
     def registration_code(self):
         code = []
+        single = "true" if not self.is_index_task else "false"
+        index  = "true" if     self.is_index_task else "false"
         args = [cpp_var(self.id()),
                 cpp_var("Processor::LOC_PROC"),
-                cpp_var("true"),
-                cpp_var("false")]
+                cpp_var(single),
+                cpp_var(index)]
         code += [cpp_funcall("HighLevelRuntime::register_legion_task", [self.name], args)]
         return code
 
