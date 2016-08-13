@@ -68,7 +68,7 @@ def run_case(test_location, test_name, settings):
 def run_legion_spy(test_location, test_name):
     spy_log_file = join(test_location, 'spy.log')
     spy_output_file = join(test_location, 'spy_results.txt')
-    spy_options = ' -l '
+    spy_options = ' -lpa '
     run_legion_spy_command_string = legion_spy_path + spy_options + spy_log_file + ' > ' + spy_output_file
     spy_process = Popen(run_legion_spy_command_string, shell=True, stdout=PIPE)
     spy_process.communicate()
