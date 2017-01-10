@@ -56,6 +56,7 @@ class TestCase():
                        cpp_include("random_mapper.h"),
                        cpp_using("LegionRuntime::HighLevel"),
                        cpp_using("LegionRuntime::Accessor"),
+                       cpp_using("LegionRuntime::Arrays"),
                        self.scope_struct(),
                        self.pretty_task_id_enum()] + self.pretty_field_id_enums()
         return cpp_top_level_items(boilerplate +
