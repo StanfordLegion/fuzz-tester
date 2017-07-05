@@ -53,7 +53,8 @@ OUTPUT_LEVEL ?= LEVEL_DEBUG
 SHARED_LOWLEVEL ?= 0
 USE_CUDA ?= 0
 USE_GASNET ?= 0
-CC_FLAGS ?= -std=c++11 -DLEGION_SPY
+CC_FLAGS ?=
+CC_FLAGS += -DLEGION_SPY -std=c++11
 OUTFILE := %s
 GEN_SRC := %s.cc random_mapper.cc
 include $(LG_RT_DIR)/runtime.mk
