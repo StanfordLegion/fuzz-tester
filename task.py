@@ -155,7 +155,7 @@ class Task():
                 cpp_var("Processor::LOC_PROC"),
                 cpp_var(single),
                 cpp_var(index)]
-        code += [cpp_funcall("HighLevelRuntime::register_legion_task", [self.name], args)]
+        code += [cpp_funcall("Runtime::register_legion_task", [self.name], args)]
         return code
 
     def id(self):
@@ -179,7 +179,7 @@ class Task():
         map(lambda t: t.shouldnt_print_regions(), self.collect_tasks())
 
 # Task argument boilerplate
-runtime = cpp_formal_param(cpp_ptr(cpp_var("HighLevelRuntime")), cpp_var("runtime"))
+runtime = cpp_formal_param(cpp_ptr(cpp_var("Runtime")), cpp_var("runtime"))
 context = cpp_formal_param(cpp_var("Context"), cpp_var("ctx"))
 regions = cpp_formal_param(cpp_const(cpp_ref(cpp_var("std::vector<PhysicalRegion>"))), cpp_var("regions"))
 task = cpp_formal_param(cpp_const(cpp_ptr(cpp_var("Task"))), cpp_var("task"))
