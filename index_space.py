@@ -14,8 +14,8 @@ class IndexSpace():
     def pretty_code(self):
         ind_decl_string = cpp_var('IndexSpace ' + self.name)
         ctx = cpp_var('ctx')
-        elem_rect = 'Rect<1>(Point<1>(' + str(self.ind_start) + '), ' + 'Point<1>(' + str(self.ind_end) + '))'
-        domain = cpp_var('Domain::from_rect<1>(' + elem_rect + ')')
+        elem_rect = 'Rect<1>(' + str(self.ind_start) + ',' + str(self.ind_end) + ')'
+        domain = cpp_var(elem_rect)
         creation_call = cpp_funcall('runtime->create_index_space', [], [ctx, domain])
         partition_init = list(chain(*map(lambda p: p.init_code(self.name), self.partitions)))
         return [cpp_assign(ind_decl_string, creation_call)] + partition_init

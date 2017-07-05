@@ -117,8 +117,7 @@ class Task():
             code += [cpp_assign(launch_bounds_decl, launch_bounds_creation)]
             launch_domain_name = self.id() + "_launch_domain"
             launch_domain_decl = cpp_var('Domain ' + launch_domain_name)
-            launch_domain_creation = cpp_funcall("Domain::from_rect", ["1"], [launch_bounds_name])
-            code += [cpp_assign(launch_domain_decl, launch_domain_creation)]
+            code += [cpp_assign(launch_domain_decl, launch_bounds_name)]
             launcher_init = cpp_funcall('IndexLauncher ' + launcher_name, [], [self.id(), launch_domain_name, argument, arg_map_name])
             execute_index_space = cpp_funcall('runtime->execute_index_space', [], ['ctx', launcher_name])
             future_map_name = self.id() + "future_map"

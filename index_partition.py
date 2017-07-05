@@ -7,7 +7,7 @@ class IndexPartition():
 
     def color_init(self, dom_name, color, start, end):
         lhs = dom_name + '[' + str(color) + '] = '
-        rhs = 'Domain::from_rect<1>(Rect<1>(Point<1>(' + str(start) + '), Point<1>(' + str(end) + ')))'
+        rhs = 'Rect<1>(' + str(start) + ',' + str(end) + ')'
         return lhs + rhs
 
     def domain_coloring_init(self):
@@ -46,7 +46,7 @@ class IndexPartition():
     def pretty_code(self, parent_name):
         color_dom_name = self.name + '_color_domain'
         dom_name = self.name + '_coloring'
-        dom_init = 'Domain ' + color_dom_name + ' = Domain::from_rect<1>(Rect<1>(Point<1>(' + str(self.color_min()) + '), Point<1>(' + str(self.color_max()) + ')))'
+        dom_init = 'Domain ' + color_dom_name + ' = Rect<1>(' + str(self.color_min()) + ',' + str(self.color_max()) + ')'
         part_init = 'IndexPartition ' + self.name + ' = ' + 'runtime->create_index_partition(ctx, ' + parent_name + ', ' + color_dom_name + ', ' + dom_name + ', ' + str(self.is_disjoint()).lower() + ')'
         code = self.domain_coloring_init() + [dom_init, part_init]
         for color in self.subspaces:

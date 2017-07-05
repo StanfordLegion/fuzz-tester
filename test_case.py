@@ -33,15 +33,15 @@ class TestCase():
     def main_body(self):
         task_registration = [self.set_top_level_task()] + self.register_tasks()
         mapper_registration = [self.set_default_mapper()]
-        run_call = [cpp_var("return HighLevelRuntime::start(argc, argv)")]
+        run_call = [cpp_var("return Runtime::start(argc, argv)")]
         return task_registration + mapper_registration + run_call
 
     def set_top_level_task(self):
-        return cpp_funcall("HighLevelRuntime::set_top_level_task_id", [],
+        return cpp_funcall("Runtime::set_top_level_task_id", [],
                            [cpp_var(self.top_level_task.id())])
 
     def set_default_mapper(self):
-        return cpp_funcall("HighLevelRuntime::set_registration_callback", [],
+        return cpp_funcall("Runtime::set_registration_callback", [],
                            [cpp_var("register_random_mappers")])
 
     def register_tasks(self):
@@ -54,9 +54,7 @@ class TestCase():
     def pretty_string(self):
         boilerplate = [cpp_include("legion.h"),
                        cpp_include("random_mapper.h"),
-                       cpp_using("LegionRuntime::HighLevel"),
-                       cpp_using("LegionRuntime::Accessor"),
-                       cpp_using("LegionRuntime::Arrays"),
+                       cpp_using("Legion"),
                        self.scope_struct(),
                        self.pretty_task_id_enum()] + self.pretty_field_id_enums()
         return cpp_top_level_items(boilerplate +
